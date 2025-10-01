@@ -1,3 +1,471 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ===== Heritage Hub – Traditional Brown Aesthetic (Nav/Chrome focused) ===== */
+
+:root{
+  --bg:        #F5EFE6;        /* parchment */
+  --ink:       #2A1C14;        /* deep brown */
+  --muted:     #7B6A5B;        /* soft brown */
+  --brand:     #6B4E3D;        /* cocoa */
+  --brand-600: #5A3E2B;        /* deeper cocoa */
+  --accent:    #D9A441;        /* antique gold */
+  --terracotta:#B67352;        /* clay */
+  --shadow: 0 12px 38px rgba(42,28,20,.12);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body.hh-body{
+  margin:0; color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(1200px 800px at 8% -20%, #fff8ed, transparent),
+    radial-gradient(900px 500px at 92% 120%, #f2e6d7, transparent),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+/* progress bar */
+#hh-progress{
+  position:fixed; top:0; left:0; height:3px; width:0%;
+  background:linear-gradient(90deg, var(--accent), #f3d28a 60%, #ffffff);
+  z-index:60; box-shadow:0 2px 8px rgba(217,164,65,.35);
+}
+
+/* ornamental strip top */
+.hh-motif{ background:linear-gradient(180deg, rgba(217,164,65,.09), transparent) }
+
+/* container */
+.hh-container{ width:min(1180px,92%); margin:0 auto }
+
+/* ===== Topbar ===== */
+.hh-topbar{
+  background: linear-gradient(180deg, var(--brand), var(--brand-600));
+  color:#F9F4EC; font-size:.92rem; border-bottom:1px solid rgba(255,255,255,.07)
+}
+.hh-toplinks{ display:flex; gap:18px; align-items:center; padding:8px 0; list-style:none; margin:0 }
+.hh-toplinks a{ color:#F9F4EC; text-decoration:none; opacity:.96; transition:opacity .2s ease }
+.hh-toplinks a:hover{ opacity:1 }
+.hh-toplinks .accent{ font-weight:800; color:#fff }
+.hh-divider{ flex:1 }
+.hh-lang{ font-family:"Hind Siliguri",sans-serif }
+.hh-lang .sep{ opacity:.6; margin:0 6px }
+
+/* ===== Header ===== */
+.hh-header{
+  position:sticky; top:0; z-index:50;
+  background: linear-gradient(180deg, rgba(107,78,61,.96), rgba(90,62,43,.92));
+  backdrop-filter:saturate(125%) blur(5px);
+  box-shadow:0 1px 0 rgba(255,255,255,.06)
+}
+.hh-header-row{ display:flex; align-items:center; gap:18px; padding:16px 0; transition:padding .2s ease }
+.shrink .hh-header-row{ padding:10px 0 }
+
+/* wordmark */
+.hh-wordmark{ display:flex; align-items:center; gap:10px }
+.hh-wordmark span{
+  font-family:"Cinzel",serif; font-weight:700; letter-spacing:.4px;
+  color:#fff; font-size:28px; text-shadow:0 2px 18px rgba(0,0,0,.25)
+}
+.hh-wordmark svg{ height:12px }
+
+/* search */
+.hh-search{
+  flex:1; display:flex; background:#fff; border-radius:14px; overflow:hidden; box-shadow:var(--shadow);
+  transition:transform .18s ease, box-shadow .18s ease
+}
+.hh-search:focus-within{ transform:translateY(-1px) scale(1.01); box-shadow:0 18px 48px rgba(42,28,20,.18) }
+.hh-search input{ flex:1; border:0; padding:14px 16px; font-size:15px; outline:none; color:var(--ink) }
+.hh-search button{ width:56px; border:0; background:#EDDFC9; color:var(--brand-600); display:grid; place-items:center; cursor:pointer }
+.hh-search button svg{ width:22px; height:22px }
+
+/* actions */
+.hh-actions{ display:flex; align-items:center; gap:10px }
+.hh-cart{ position:relative; color:#fff; text-decoration:none; display:grid; place-items:center; width:42px; height:42px; border-radius:12px; transition:transform .15s ease }
+.hh-cart:hover{ transform:translateY(-2px) }
+.hh-cart svg{ width:26px; height:26px; stroke:#fff; fill:none }
+.hh-badge{ position:absolute; top:-3px; right:-3px; background:#fff; color:var(--brand-600); font-size:.75rem; border-radius:999px; padding:2px 6px; box-shadow:var(--shadow) }
+
+/* burger */
+.hh-burger{ display:none; width:42px; height:42px; border:0; background:transparent; cursor:pointer }
+.hh-burger span{ display:block; height:2px; background:#fff; margin:7px 8px; border-radius:2px }
+
+/* ===== Primary nav ===== */
+.hh-nav{ background:linear-gradient(180deg, rgba(0,0,0,.06), transparent) }
+.hh-menu{ display:flex; gap:18px; align-items:center; list-style:none; margin:0; padding:8px 0 }
+.hh-menu a{
+  position:relative; color:#F4ECE3; text-decoration:none; padding:10px 8px; font-weight:800; letter-spacing:.25px; opacity:.96
+}
+/* gold underline + tiny filigree bullets */
+.hh-menu a.with-orn::after{
+  content:""; position:absolute; left:10px; right:10px; bottom:6px; height:2px;
+  background:linear-gradient(90deg, var(--accent), #f3d28a); transform:scaleX(0); transform-origin:right; transition:transform .25s ease
+}
+.hh-menu a.with-orn::before{
+  content:"◆"; position:absolute; left:-4px; bottom:2px; font-size:.6rem; color:rgba(217,164,65,.75); opacity:0; transform:translateY(4px); transition:opacity .25s, transform .25s
+}
+.hh-menu a:hover::after{ transform:scaleX(1); transform-origin:left }
+.hh-menu a:hover::before{ opacity:1; transform:none }
+.hh-menu a.active{ opacity:1 }
+.hh-menu a.active::after{ transform:scaleX(1) }
+
+/* anchor offset for sticky header */
+#about,#explore,#app,#contact{ scroll-margin-top:120px }
+
+/* ===== Footer ===== */
+.hh-filigree{ background:linear-gradient(180deg, transparent, rgba(217,164,65,.08)) }
+.hh-footer{
+  margin-top:40px;
+  background: radial-gradient(800px 300px at 80% -20%, rgba(217,164,65,.08), transparent), #20150F;
+  color:#CEC2B6
+}
+.footer-grid{ display:grid; grid-template-columns:2fr 1fr 1fr; gap:24px; padding:36px 0 }
+.hh-footer h4{ color:#F7F1EA; margin:0 0 8px; font-family:"Cinzel",serif; letter-spacing:.3px }
+.hh-footer a{ color:#EDE4D9; text-decoration:none }
+.contact-list{ list-style:none; padding:0; margin:0 }
+.copy{ border-top:1px solid #2b1d14; text-align:center; padding:14px 0; font-size:.92rem }
+
+/* ===== Responsive ===== */
+@media (max-width:980px){
+  .footer-grid{ grid-template-columns:1fr }
+  .hh-burger{ display:block }
+  .hh-menu{ display:none; flex-direction:column; align-items:flex-start; padding:10px 0 16px }
+  .hh-menu.show{ display:flex }
+}
+
+
+/* --- Gold lace (home only) --- */
+.hh-lace{ background:linear-gradient(180deg, rgba(217,164,65,.08), transparent) }
+.hh-lace svg{ display:block; width:100%; height:36px }
+
+/* --- Mega menu --- */
+.has-mega{ position:relative }
+.mega{
+  position:absolute; left:0; top:100%; width:920px; max-width:86vw;
+  background:linear-gradient(180deg, #fff, #FBF4E8);
+  border:1px solid #E7DCCF; border-radius:14px; box-shadow:0 24px 60px rgba(42,28,20,.18);
+  padding:16px; display:none; transform-origin:top; animation:mega-in .18s ease forwards;
+}
+@keyframes mega-in{ from{ opacity:0; transform:scaleY(.96)} to{opacity:1; transform:scaleY(1)} }
+.mega-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px }
+.mega-col h5{
+  margin:0 0 8px; font-family:"Cinzel",serif; font-size:16px; color:var(--brand-600);
+  border-bottom:1px dashed #E7DCCF; padding-bottom:6px
+}
+.mega a{
+  display:block; padding:8px 10px; border-radius:10px; text-decoration:none; color:var(--ink);
+  transition:background .15s ease, transform .12s ease
+}
+.mega a:hover{ background:#F6EFE4; transform:translateX(2px) }
+
+/* show on hover (desktop) */
+@media (hover:hover){
+  .has-mega:hover > .mega{ display:block }
+}
+
+/* mobile: mega turns into simple list inside slide-down menu */
+@media (max-width:980px){
+  .has-mega > .mega{
+    position:static; width:auto; max-width:none; box-shadow:none; border:0;
+    padding:6px 0 12px; background:transparent; display:block
+  }
+  .mega-row{ grid-template-columns:1fr 1fr }
+}
+.hh-menu a {
+  position: relative;
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 14px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  opacity: .95;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(217,164,65,.0), rgba(217,164,65,.15));
+  transition: all .25s ease;
+  font-family: "Cinzel", serif;
+}
+
+/* Hover effect: golden glow */
+.hh-menu a:hover {
+  opacity: 1;
+  background: linear-gradient(180deg, rgba(217,164,65,.2), rgba(217,164,65,.4));
+  box-shadow: 0 4px 14px rgba(217,164,65,.35);
+  transform: translateY(-2px);
+}
+
+/* Active state */
+.hh-menu a.active {
+  background: linear-gradient(180deg, rgba(217,164,65,.4), rgba(217,164,65,.6));
+  color: #fff;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.25), 0 0 12px rgba(217,164,65,.5);
+}
+
+/* Ornamental underline */
+.hh-menu a.with-orn::after {
+  content:"";
+  position:absolute; left:10px; right:10px; bottom:6px; height:2px;
+  background:linear-gradient(90deg, var(--accent), #f3d28a);
+  transform:scaleX(0);
+  transform-origin:right;
+  transition:transform .25s ease;
+}
+.hh-menu a.with-orn:hover::after,
+.hh-menu a.active.with-orn::after {
+  transform:scaleX(1);
+  transform-origin:left;
+}
+
+/* --- Mega menu --- */
+.has-mega { position:relative }
+
+.mega {
+  position:absolute; left:0; top:100%; width:920px; max-width:86vw;
+  background:linear-gradient(180deg, #fffdf8, #f7efe4);
+  border:1px solid #E7DCCF; border-radius:14px;
+  box-shadow:0 24px 60px rgba(42,28,20,.18);
+  padding:16px; display:none;
+  transform-origin:top; animation:mega-in .18s ease forwards;
+}
+
+@keyframes mega-in { from{ opacity:0; transform:scaleY(.96)} to{opacity:1; transform:scaleY(1)} }
+
+.mega-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px }
+
+.mega-col h5 {
+  margin:0 0 8px;
+  font-family:"Cinzel",serif;
+  font-size:16px;
+  color: var(--brand-600); /* deep brown */
+  border-bottom:1px dashed #E7DCCF;
+  padding-bottom:6px;
+}
+
+.mega a {
+  display:block;
+  padding:8px 10px;
+  border-radius:10px;
+  text-decoration:none;
+  color: var(--brand-600); /* dark readable brown */
+  font-weight:600;
+  transition: background .15s ease, transform .12s ease;
+}
+
+.mega a:hover {
+  background: #F0E0C8; /* light parchment highlight */
+  color: var(--ink); /* even darker on hover */
+  transform: translateX(3px);
+}
+
+
+/* ===== Craft Origin Map (Heritage aesthetic) ===== */
+.craft-map{
+  background:
+    radial-gradient(1200px 300px at 50% -10%, rgba(217,164,65,.08), transparent);
+  padding: 22px 0 8px;
+  border-bottom: 1px solid rgba(217,164,65,.12);
+}
+
+.craft-map .map-title{
+  font-family:"Cinzel",serif;
+  font-size:26px;
+  color:var(--brand-600);
+  letter-spacing:.4px;
+  margin: 0 0 10px;
+  text-align:center;
+}
+
+.map-wrapper{
+  position:relative;
+  width:min(1100px, 94%);
+  margin: 0 auto;
+}
+
+.bd-map{
+  display:block;
+  width:100%;
+  max-width:100%;
+  filter: drop-shadow(0 20px 40px rgba(42,28,20,.12));
+}
+
+/* divisions base */
+.division{
+  fill: url(#parchment);
+  stroke: #6b4e3d;
+  stroke-width: 2.2;
+  transition: transform .2s ease, filter .2s ease, fill .2s ease, stroke .2s ease;
+  cursor:pointer;
+}
+
+/* textures per region to hint at crafts */
+.dhaka, .mymensingh{ fill: url(#parchment); }
+.dhaka{ filter: url(#weaveMask); } /* subtle weave overlay via mask */
+.mymensingh{ filter: url(#weaveMask); }
+
+.rajshahi, .khulna, .barisal{ fill: url(#parchment); }
+.rajshahi{ fill: url(#parchment); }
+.rajshahi{ stroke: #8a5a40; }
+.khluan{}
+.rajshahi, .khulna, .barisal{ fill: url(#parchment); }
+.rajshahi::after{}
+.khluan::after{}
+/* we emulate texture via hover/active color; base fill stays parchment */
+
+.sylhet, .chittagong{ fill: url(#parchment); }
+
+/* hover highlight */
+.division:hover{
+  filter: drop-shadow(0 8px 26px rgba(217,164,65,.35));
+  stroke: #c79227;
+}
+
+/* selected state (JS toggles .active) */
+.division.active{
+  fill: #f0e0c8;
+  stroke: #c79227;
+  filter: drop-shadow(0 14px 36px rgba(217,164,65,.45));
+}
+
+/* map wordmark */
+.map-wordmark{
+  font-family:"Cinzel",serif;
+  font-size:40px;
+  fill: rgba(42,28,20,.18);
+  letter-spacing:2px;
+}
+
+/* tooltip */
+.map-tip{
+  position:absolute;
+  pointer-events:none;
+  transform:translate(-50%, -125%);
+  background:#fffaf2;
+  border:1px solid rgba(217,164,65,.45);
+  padding:8px 10px;
+  border-radius:8px;
+  box-shadow:var(--shadow);
+  color:var(--brand-600);
+  font-weight:700;
+  font-family:"Cinzel",serif;
+  font-size:14px;
+  z-index:5;
+}
+
+/* panel (right side on desktop, full-width on mobile) */
+.craft-panel{
+  position: absolute;
+  top: 18px;
+  right: -4px;
+  width: 360px;
+  max-width: 86vw;
+  background: linear-gradient(180deg, #fffdf8, #fbf4e8);
+  border: 1px solid #e7dccf;
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(42,28,20,.18);
+  padding: 16px 16px 12px;
+  display:none;
+}
+
+.craft-panel.open{ display:block; }
+
+.panel-close{
+  position:absolute; top:6px; right:8px;
+  width:28px; height:28px; border:0; border-radius:8px;
+  background:#f0e0c8; color:#5a3e2b; font-weight:800; cursor:pointer;
+}
+.craft-panel h3{
+  margin:0; padding-right:34px;
+  font-family:"Cinzel",serif; color:var(--brand-600);
+}
+.panel-sub{ margin:4px 0 10px; color:var(--muted); font-size:.95rem }
+.panel-list{ display:grid; grid-template-columns:1fr; gap:8px; max-height: 46vh; overflow:auto; padding-right:8px }
+.panel-item{
+  background:#fff; border:1px solid #e7dccf; border-radius:10px; padding:8px 10px;
+  box-shadow:var(--shadow);
+}
+.panel-item b{ color:var(--brand-600) }
+.panel-item small{ color:var(--muted) }
+
+.panel-actions{ margin-top:10px; text-align:right }
+.btn-primary.small{ padding:8px 12px; border-radius:10px; font-size:.92rem }
+
+/* responsive position */
+@media (max-width: 980px){
+  .craft-panel{
+    position:fixed; left:50%; transform:translateX(-50%);
+    top:auto; bottom:12px; width:min(520px, 92%);
+    z-index:40;
+  }
+}
+/* ===============================
+   Base Map Styling
+   =============================== */
+.bd-map {
+  width: 100%;
+  max-width: 500px; /* smaller than before */
+  margin: 0 auto;
+  display: block;
+  background: #fdfaf3; /* subtle parchment backdrop */
+  border: 2px solid #b9935a;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* ===============================
+   Divisions (heritage style)
+   =============================== */
+.bd-map .division {
+  fill: #f7efe3;                /* parchment base */
+  stroke: #7c5328;              /* darker golden-brown stroke */
+  stroke-width: 2;
+  cursor: pointer;
+  transition: transform 0.25s ease, 
+              filter 0.25s ease,
+              fill 0.25s ease,
+              stroke-width 0.25s ease;
+  transform-origin: center;
+}
+
+.bd-map .division:hover {
+  fill: #e6d0a8; /* deeper parchment tone */
+  stroke-width: 3;
+  filter: drop-shadow(0 8px 16px rgba(124,83,40,0.35));
+  transform: scale(1.04); /* makes it look like it “splits out” */
+}
+
+.bd-map .division.active {
+  fill: #c19a5b;
+  stroke: #5a3a1c;
+  stroke-width: 3;
+  filter: drop-shadow(0 6px 12px rgba(90,58,28,0.5));
+}
+
+/* ===============================
+   Labels (engraved look)
+   =============================== */
+.bd-map .labels text {
+  pointer-events: none;
+  font-family: "Cinzel", "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 16px;
+  fill: #5a3a1c;  /* heritage brown */
+  text-anchor: middle;
+  dominant-baseline: middle;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  text-shadow: 1px 1px 4px rgba(255,255,255,0.6);
+}
+
+
+.bd-map .auto-label {
+  font-family: "Cinzel", "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 14px;
+  fill: #5a3a1c;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}

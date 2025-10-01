@@ -1,36 +1,225 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>@yield('title','Heritage Hub')</title>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+  {{-- Vite --}}
+  @vite(['resources/css/app.css','resources/js/app.js'])
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+  {{-- Fonts: Latin + Bengali --}}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;800&family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="hh-body">
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+  {{-- thin scroll progress (ornamental) --}}
+  <div id="hh-progress"></div>
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+  {{-- ornamental top strip (subtle pattern) --}}
+  <div class="hh-motif">
+    <svg viewBox="0 0 1200 30" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <pattern id="tile" width="60" height="30" patternUnits="userSpaceOnUse">
+          <path d="M0 15 Q15 0 30 15 T60 15" fill="none" stroke="rgba(217,164,65,.35)" stroke-width="1.2"/>
+          <path d="M0 15 Q15 30 30 15 T60 15" fill="none" stroke="rgba(217,164,65,.18)" stroke-width="1.2"/>
+        </pattern>
+      </defs>
+      <rect width="1200" height="30" fill="url(#tile)" />
+    </svg>
+  </div>
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+  {{-- Top utility bar --}}
+  <div class="hh-topbar">
+    <div class="hh-container">
+      <ul class="hh-toplinks">
+        <li><a href="{{ route('shop') }}">Become a Seller</a></li>
+        <li><a href="{{ route('skills') }}">Workshops</a></li>
+        <li class="hh-divider"></li>
+
+        {{-- language toggle (bn/en) --}}
+        <li>
+          <a class="hh-lang" href="#">
+            <span class="bn">বাংলা</span><span class="sep">|</span><span class="en">EN</span>
+          </a>
+        </li>
+
+        @auth
+          <li><a href="{{ route('home') }}">Hi, {{ auth()->user()->name }}</a></li>
+          <li>
+            <form action="{{ route('logout') }}" method="POST">@csrf
+              <button type="submit" class="linklike">Logout</button>
+            </form>
+          </li>
+        @else
+          @if(Route::has('login')) <li><a href="{{ route('login') }}">Login</a></li> @endif
+          @if(Route::has('register')) <li><a class="accent" href="{{ route('register') }}">Sign Up</a></li> @endif
+        @endauth
+      </ul>
+    </div>
+  </div>
+
+  {{-- Header with logo + search + cart --}}
+  <header id="hh-header" class="hh-header">
+    <div class="hh-container hh-header-row">
+      <a href="{{ route('home') }}" class="hh-logo" aria-label="Heritage Hub">
+        {{-- wordmark with small filigree --}}
+        <div class="hh-wordmark">
+          <span>HeritageHub</span>
+          <svg viewBox="0 0 80 10" aria-hidden="true"><path d="M2 5h76" stroke="rgba(217,164,65,.55)" stroke-width="1.5" stroke-linecap="round"/><circle cx="40" cy="5" r="2.5" fill="rgba(217,164,65,.45)"/></svg>
         </div>
-    </body>
+      </a>
+
+      <form action="{{ route('shop') }}" class="hh-search" role="search">
+        <input name="q" type="search" placeholder="Search crafts, cities, festivals…" />
+        <button aria-label="Search">
+          <svg viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        </button>
+      </form>
+
+      <div class="hh-actions">
+        <a class="hh-cart" href="{{ route('cart') }}" aria-label="Cart">
+          <svg viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12zM6 6l-2-2H2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/></svg>
+          <span class="hh-badge" id="hh-cart-count">0</span>
+        </a>
+        <button id="hh-burger" class="hh-burger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    {{-- Primary nav with anchors --}}
+    @php
+      $onHome = request()->routeIs('home');
+      $a = fn($id) => $onHome ? "#$id" : route('home')."#$id";
+    @endphp
+    <nav id="hh-nav" class="hh-nav">
+      <div class="hh-container">
+        <ul class="hh-menu">
+          <li><a href="{{ route('home') }}" class="with-orn">Home</a></li>
+          <li><a href="{{ $a('about') }}" class="with-orn">About</a></li>
+          <li><a href="{{ $a('explore') }}" class="with-orn">Explore</a></li>
+          <li class="has-mega">
+  <a href="{{ route('shop') }}" class="with-orn" aria-haspopup="true" aria-expanded="false">Shop</a>
+  <div class="mega" role="menu" aria-label="Shop categories">
+    <div class="mega-row">
+      <div class="mega-col">
+        <h5>Textiles</h5>
+        <a href="{{ route('shop') }}?cat=Jamdani">Jamdani</a>
+        <a href="{{ route('shop') }}?cat=Muslin">Muslin</a>
+        <a href="{{ route('shop') }}?cat=Nakshi Kantha">Nakshi Kantha</a>
+        <a href="{{ route('shop') }}?cat=Tangail Saree">Tangail Saree</a>
+      </div>
+      <div class="mega-col">
+        <h5>Craft & Wood</h5>
+        <a href="{{ route('shop') }}?cat=Woodcarving">Woodcarving</a>
+        <a href="{{ route('shop') }}?cat=Shital Pati">Shital Pati</a>
+        <a href="{{ route('shop') }}?cat=Rickshaw Art">Rickshaw Art</a>
+        <a href="{{ route('shop') }}?cat=Bamboo & Cane">Bamboo & Cane</a>
+      </div>
+      <div class="mega-col">
+        <h5>Metal & Clay</h5>
+        <a href="{{ route('shop') }}?cat=Dokra Metal">Dokra Metal</a>
+        <a href="{{ route('shop') }}?cat=Brass & Copper">Brass & Copper</a>
+        <a href="{{ route('shop') }}?cat=Terracotta">Terracotta</a>
+        <a href="{{ route('shop') }}?cat=Pottery">Pottery</a>
+      </div>
+      <div class="mega-col">
+        <h5>Folk & Gifts</h5>
+        <a href="{{ route('shop') }}?cat=Folk Masks">Folk Masks</a>
+        <a href="{{ route('shop') }}?cat=Nakshi Dolls">Nakshi Dolls</a>
+        <a href="{{ route('shop') }}?cat=Scroll Art">Scroll Art</a>
+        <a href="{{ route('shop') }}?cat=Festival Decor">Festival Decor</a>
+      </div>
+    </div>
+  </div>
+</li>
+
+          <li><a href="{{ route('skills') }}" class="with-orn">Skill</a></li>
+          <li><a href="{{ $a('app') }}" class="with-orn">App</a></li>
+          <li><a href="{{ $a('contact') }}" class="with-orn">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+    @if($onHome)
+  {{-- gold lace under header (home only) --}}
+  <div class="hh-lace" aria-hidden="true">
+    <svg viewBox="0 0 1200 36" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="goldfade" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stop-color="rgba(217,164,65,.0)"/>
+          <stop offset="0.1" stop-color="rgba(217,164,65,.30)"/>
+          <stop offset="0.9" stop-color="rgba(217,164,65,.30)"/>
+          <stop offset="1" stop-color="rgba(217,164,65,.0)"/>
+        </linearGradient>
+      </defs>
+      <!-- scalloped lace -->
+      <path d="M0 18
+               Q 40 0   80 18
+               T 160 18
+               T 240 18
+               T 320 18
+               T 400 18
+               T 480 18
+               T 560 18
+               T 640 18
+               T 720 18
+               T 800 18
+               T 880 18
+               T 960 18
+               T 1040 18
+               T 1120 18
+               T 1200 18" fill="none" stroke="url(#goldfade)" stroke-width="2"/>
+      <path d="M0 22
+               Q 40 36 80 22
+               T 160 22 T 240 22 T 320 22 T 400 22 T 480 22 T 560 22 T 640 22
+               T 720 22 T 800 22 T 880 22 T 960 22 T 1040 22 T 1120 22 T 1200 22"
+            fill="none" stroke="rgba(217,164,65,.18)" stroke-width="1"/>
+    </svg>
+  </div>
+@endif
+
+  </header>
+
+  <main class="hh-main">@yield('content')</main>
+
+  {{-- filigree divider before footer --}}
+  <div class="hh-filigree" aria-hidden="true">
+    <svg viewBox="0 0 1200 50" preserveAspectRatio="none">
+      <path d="M0 25 Q300 0 600 25 T1200 25" fill="none" stroke="rgba(217,164,65,.35)" stroke-width="1.5"/>
+      <path d="M0 30 Q300 55 600 30 T1200 30" fill="none" stroke="rgba(217,164,65,.25)" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  {{-- Footer = CONTACT target --}}
+  <footer id="contact" class="hh-footer">
+    <div class="hh-container footer-grid">
+      <div>
+        <h4>About Heritage Hub</h4>
+        <p>Discover heritage sites, crafts, and festivals across Bangladesh.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="{{ $a('about') }}">About</a></li>
+          <li><a href="{{ $a('explore') }}">Explore</a></li>
+          <li><a href="{{ route('shop') }}">See All Shops</a></li>
+          <li><a href="{{ route('skills') }}">Skills</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul class="contact-list">
+          <li>Email: hello@heritagehub.local</li>
+          <li>Phone: +880 1XXX-XXXXXX</li>
+          <li>Dhaka, Bangladesh</li>
+        </ul>
+      </div>
+    </div>
+    <div class="copy">© {{ date('Y') }} Heritage Hub</div>
+  </footer>
+
+</body>
 </html>
