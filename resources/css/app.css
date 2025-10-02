@@ -469,3 +469,5 @@ body.hh-body{
   stroke-linejoin: round;
   pointer-events: none;
 }
+.panel-item { display:block; width:100%; text-align:left; background:#fff; border:1px solid #e9e2d6; border-radius:10px; padding:8px 10px; cursor:pointer; text-decoration:none; color:inherit; }
+.panel-item:hover { background:#fff7eb; }

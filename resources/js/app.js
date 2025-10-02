@@ -82,108 +82,150 @@ document.addEventListener('DOMContentLoaded', () => {
   onScroll();
   window.addEventListener('scroll', onScroll);
     // ===== Craft Origin Map Interactions =====
-  const tip = document.getElementById('map-tip');
-  const panel = document.getElementById('craft-panel');
-  const panelTitle = document.getElementById('panel-title');
-  const panelList = document.getElementById('panel-list');
-  const panelClose = document.getElementById('panel-close');
-  const viewAllBtn = document.getElementById('panel-view-all');
+ // ===== Craft Origin Map Interactions =====
+const tip = document.getElementById('map-tip');
+const panel = document.getElementById('craft-panel');
+const panelTitle = document.getElementById('panel-title');
+const panelList = document.getElementById('panel-list');
+const panelClose = document.getElementById('panel-close');
+const viewAllBtn = document.getElementById('panel-view-all');
 
-  // Division -> Districts & Crafts data
-  const craftData = {
-    Dhaka: [
-      { district: 'Tangail', crafts: ['Tangail Saree', 'Handloom'] },
-      { district: 'Narayanganj', crafts: ['Jamdani Saree'] },
-      { district: 'Dhaka', crafts: ['Rickshaw Art', 'Traditional Metalwork'] },
-      { district: 'Manikganj', crafts: ['Brass & Copper'] },
-    ],
-    Mymensingh: [
-      { district: 'Mymensingh', crafts: ['Nakshi Kantha', 'Folk Music Instruments'] },
-      { district: 'Jamalpur', crafts: ['Hand Embroidery'] },
-      { district: 'Netrokona', crafts: ['Bamboo & Cane'] },
-      { district: 'Sherpur', crafts: ['Rural Weaves'] },
-    ],
-    Rajshahi: [
-      { district: 'Rajshahi', crafts: ['Rajshahi Silk'] },
-      { district: 'Natore', crafts: ['Nakshi Kantha'] },
-      { district: 'Chapainababganj', crafts: ['Terracotta'] },
-      { district: 'Pabna', crafts: ['Clay Pottery'] },
-    ],
-    Rangpur: [
-      { district: 'Rangpur', crafts: ['Bamboo Crafts'] },
-      { district: 'Lalmonirhat', crafts: ['Cane Work'] },
-      { district: 'Kurigram', crafts: ['Folk Weaving'] },
-      { district: 'Dinajpur', crafts: ['Woodcraft'] },
-    ],
-    Sylhet: [
-      { district: 'Sylhet', crafts: ['Cane & Shital Pati'] },
-      { district: 'Sunamganj', crafts: ['Cane & Bamboo'] },
-      { district: 'Habiganj', crafts: ['Clay Toys'] },
-      { district: 'Moulvibazar', crafts: ['Tribal Textiles'] },
-    ],
-    Khulna: [
-      { district: 'Khulna', crafts: ['Shital Pati', 'Wood Inlay'] },
-      { district: 'Jessore', crafts: ['Terracotta'] },
-      { district: 'Bagerhat', crafts: ['Brass & Copper'] },
-      { district: 'Satkhira', crafts: ['Sea Shell Crafts'] },
-    ],
-    Barisal: [
-      { district: 'Barisal', crafts: ['Woodcraft'] },
-      { district: 'Pirojpur', crafts: ['Cane & Bamboo'] },
-      { district: 'Bhola', crafts: ['Coconut Crafts'] },
-      { district: 'Jhalokathi', crafts: ['Lacquer Work'] },
-    ],
-    Chittagong: [
-      { district: 'Chattogram', crafts: ['Shipbreaking Metal Art', 'Wood Carving'] },
-      { district: 'Cox’s Bazar', crafts: ['Shell & Sea Crafts', 'Bamboo'] },
-      { district: 'Bandarban', crafts: ['Tribal Weaving'] },
-      { district: 'Rangamati', crafts: ['Tribal Textiles & Jewelry'] },
-    ],
+// Division -> Districts & Crafts data
+const craftData = {
+  Dhaka: [
+    { district: 'Tangail', crafts: ['Tangail Saree', 'Handloom'] },
+    { district: 'Narayanganj', crafts: ['Jamdani Saree'] },
+    { district: 'Dhaka', crafts: ['Rickshaw Art', 'Traditional Metalwork'] },
+    { district: 'Manikganj', crafts: ['Brass & Copper'] },
+  ],
+  Mymensingh: [
+    { district: 'Mymensingh', crafts: ['Nakshi Kantha', 'Folk Music Instruments'] },
+    { district: 'Jamalpur', crafts: ['Hand Embroidery'] },
+    { district: 'Netrokona', crafts: ['Bamboo & Cane'] },
+    { district: 'Sherpur', crafts: ['Rural Weaves'] },
+  ],
+  Rajshahi: [
+    { district: 'Rajshahi', crafts: ['Rajshahi Silk'] },
+    { district: 'Natore', crafts: ['Nakshi Kantha'] },
+    { district: 'Chapainababganj', crafts: ['Terracotta'] },
+    { district: 'Pabna', crafts: ['Clay Pottery'] },
+  ],
+  Rangpur: [
+    { district: 'Rangpur', crafts: ['Bamboo Crafts'] },
+    { district: 'Lalmonirhat', crafts: ['Cane Work'] },
+    { district: 'Kurigram', crafts: ['Folk Weaving'] },
+    { district: 'Dinajpur', crafts: ['Woodcraft'] },
+  ],
+  Sylhet: [
+    { district: 'Sylhet', crafts: ['Cane & Shital Pati'] },
+    { district: 'Sunamganj', crafts: ['Cane & Bamboo'] },
+    { district: 'Habiganj', crafts: ['Clay Toys'] },
+    { district: 'Moulvibazar', crafts: ['Tribal Textiles'] },
+  ],
+  Khulna: [
+    { district: 'Khulna', crafts: ['Shital Pati', 'Wood Inlay'] },
+    { district: 'Jessore', crafts: ['Terracotta'] },
+    { district: 'Bagerhat', crafts: ['Brass & Copper'] },
+    { district: 'Satkhira', crafts: ['Sea Shell Crafts'] },
+  ],
+  Barisal: [
+    { district: 'Barisal', crafts: ['Woodcraft'] },
+    { district: 'Pirojpur', crafts: ['Cane & Bamboo'] },
+    { district: 'Bhola', crafts: ['Coconut Crafts'] },
+    { district: 'Jhalokathi', crafts: ['Lacquer Work'] },
+  ],
+  Chittagong: [
+    { district: 'Chattogram', crafts: ['Shipbreaking Metal Art', 'Wood Carving'] },
+    { district: 'Cox’s Bazar', crafts: ['Shell & Sea Crafts', 'Bamboo'] },
+    { district: 'Bandarban', crafts: ['Tribal Weaving'] },
+    { district: 'Rangamati', crafts: ['Tribal Textiles & Jewelry'] },
+  ],
+};
+
+// map hover tooltip
+const divisions = document.querySelectorAll('.bd-map .division');
+const nameFromId = (id) => {
+  const n = {
+    dhaka:'Dhaka', mymensingh:'Mymensingh', rajshahi:'Rajshahi', rangpur:'Rangpur',
+    sylhet:'Sylhet', khulna:'Khulna', barisal:'Barisal', chittagong:'Chittagong'
   };
+  return n[id] || id;
+};
 
-  // map hover tooltip
-  const divisions = document.querySelectorAll('.bd-map .division');
-  const nameFromId = (id) => {
-    const n = {
-      dhaka:'Dhaka', mymensingh:'Mymensingh', rajshahi:'Rajshahi', rangpur:'Rangpur',
-      sylhet:'Sylhet', khulna:'Khulna', barisal:'Barisal', chittagong:'Chittagong'
-    };
-    return n[id] || id;
+divisions.forEach(d => {
+  const showTip = (e) => {
+    const name = nameFromId(d.id);
+    if (!tip) return;
+    tip.textContent = name;
+    tip.hidden = false;
+    tip.style.left = e.pageX + 'px';
+    tip.style.top = e.pageY + 'px';
   };
+  d.addEventListener('mousemove', showTip);
+  d.addEventListener('mouseenter', (e)=>{ d.classList.add('hover'); showTip(e); });
+  d.addEventListener('mouseleave', ()=>{ d.classList.remove('hover'); if (tip) tip.hidden = true; });
 
-  divisions.forEach(d => {
-    const showTip = (e) => {
-      const name = nameFromId(d.id);
-      tip.textContent = name;
-      tip.hidden = false;
-      tip.style.left = e.pageX + 'px';
-      tip.style.top = e.pageY + 'px';
-    };
-    d.addEventListener('mousemove', showTip);
-    d.addEventListener('mouseenter', (e)=>{ d.classList.add('hover'); showTip(e); });
-    d.addEventListener('mouseleave', ()=>{ d.classList.remove('hover'); tip.hidden = true; });
+  // SINGLE, authoritative division click handler
+  d.addEventListener('click', () => {
+    // toggle selection
+    divisions.forEach(x => x.classList.remove('active'));
+    d.classList.add('active');
 
-    d.addEventListener('click', () => {
-      // toggle selection
-      divisions.forEach(x => x.classList.remove('active'));
-      d.classList.add('active');
+    const divName = nameFromId(d.id);
 
-      const divName = nameFromId(d.id);
-      const entries = craftData[divName] || [];
-      panelTitle.textContent = `${divName} Division`;
-      panelList.innerHTML = entries.map(({district, crafts}) =>
-        `<div class="panel-item"><b>${district}</b><br><small>${crafts.join(', ')}</small></div>`
-      ).join('');
+    // store the chosen division on the panel so other handlers can read it
+    if (panel) panel.dataset.division = divName;
 
-      // link to shop with division filter (optional param)
-      if (viewAllBtn) viewAllBtn.href = `${viewAllBtn.href.split('?')[0]}?division=${encodeURIComponent(divName)}`;
+    // Fill panel UI (title + district list)
+    if (panelTitle) panelTitle.textContent = `${divName} Division`;
 
-      panel.classList.add('open');
-    });
+    const entries = craftData[divName] || [];
+    if (panelList) {
+  panelList.innerHTML = entries.map(({ district, crafts }) => `
+    <a
+      class="panel-item"
+      data-district="${district}"
+      href="/district/${encodeURIComponent(district.toLowerCase())}"
+    >
+      <b>${district}</b><br>
+      <small>${crafts.join(', ')}</small>
+    </a>
+  `).join('');
+
+
+    }
+
+    // link to shop with division filter (optional param)
+    if (viewAllBtn) {
+      const base = viewAllBtn.href.split('?')[0];
+      viewAllBtn.href = `${base}?division=${encodeURIComponent(divName)}`;
+    }
+
+    // open panel
+    if (panel) panel.classList.add('open');
   });
+});
 
-  // close panel
-  if (panelClose) panelClose.addEventListener('click', ()=> panel.classList.remove('open'));
+// close panel
+if (panelClose && panel) {
+  panelClose.addEventListener('click', ()=> panel.classList.remove('open'));
   document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') panel.classList.remove('open'); });
+}
+
+// District click => go to full page
+if (panelList && panel) {
+  panelList.addEventListener('click', (e) => {
+    const item = e.target.closest('[data-district]');
+    if (!item) return;
+
+    const division = panel.dataset.division;   // reliable, no brittle title parsing
+    const district = item.getAttribute('data-district');
+
+    if (!division || !district) return;
+
+    // Navigate to SSR page (you added this route already)
+    window.location.href = `/heritage/${encodeURIComponent(division)}/${encodeURIComponent(district)}`;
+  });
+}
 
 });
