@@ -18,6 +18,7 @@ return new class extends Migration {
             $t->string('shop_logo_path')->nullable();
             $t->timestamps();
         });
+        
     }
     public function down(): void { Schema::dropIfExists('vendor_profiles'); }
 };

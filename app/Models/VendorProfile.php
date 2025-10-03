@@ -7,8 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class VendorProfile extends Model
 {
     protected $fillable = [
-        'user_id','shop_name','description','heritage_story','address','phone','district','shop_logo_path'
-    ];
+    'user_id','shop_name','slug','status','approved_at','rejected_at','rejection_reason',
+    'description','heritage_story','address','phone',
+    'support_email','support_phone',
+    'district_id','shop_logo_path','banner_path',
+    'vendor_category'   // ✅ added
+];
+
 
     public function user() { return $this->belongsTo(User::class); }
 

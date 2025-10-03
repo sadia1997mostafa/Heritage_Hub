@@ -63,90 +63,179 @@
       </form>
 
       {{-- REGISTER --}}
-      <form id="register-form" class="form tabpane" method="POST" action="{{ route('auth.register') }}" enctype="multipart/form-data">
-        @csrf
+<form id="register-form"
+      class="form tabpane"
+      method="POST"
+      action="{{ route('auth.register') }}"
+      enctype="multipart/form-data">
+  @csrf
 
-        <label>Name</label>
-        <input type="text" name="name" value="{{ old('name') }}" required maxlength="255" autocomplete="name" />
+  {{-- Basic user fields --}}
+  <label>Name</label>
+  <input type="text"
+         name="name"
+         value="{{ old('name') }}"
+         required
+         maxlength="255"
+         autocomplete="name" />
 
-        <label>Email</label>
-        <input type="email" name="email" value="{{ old('email') }}" required maxlength="255" autocomplete="email" />
+  <label>Email</label>
+  <input type="email"
+         name="email"
+         value="{{ old('email') }}"
+         required
+         maxlength="255"
+         autocomplete="email" />
 
-        <label>Password</label>
-        <input
-          type="password"
-          name="password"
-          required
-          minlength="8"
-          pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}"
-          title="At least 8 characters with at least one letter and one number"
-          autocomplete="new-password"
-        />
+  <label>Password</label>
+  <input type="password"
+         name="password"
+         required
+         minlength="8"
+         pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}"
+         title="At least 8 characters with at least one letter and one number"
+         autocomplete="new-password" />
 
-        <label>Confirm Password</label>
-        <input type="password" name="password_confirmation" required minlength="8" autocomplete="new-password" />
+  <label>Confirm Password</label>
+  <input type="password"
+         name="password_confirmation"
+         required
+         minlength="8"
+         autocomplete="new-password" />
 
-        <label>Profile picture (optional)</label>
-        <input type="file" name="avatar" accept="image/png,image/jpeg,image/webp" />
+  <label>Profile picture (optional)</label>
+  <input type="file"
+         name="avatar"
+         accept="image/png,image/jpeg,image/webp" />
 
-        <label>
-          <input type="checkbox" id="register_as_vendor" name="register_as_vendor" value="1" {{ old('register_as_vendor') ? 'checked' : '' }}>
-          I want to be a vendor
-        </label>
+  {{-- Toggle: register as vendor --}}
+  <label class="mt-3">
+    <input type="checkbox"
+           id="register_as_vendor"
+           name="register_as_vendor"
+           value="1"
+           {{ old('register_as_vendor') ? 'checked' : '' }}>
+    I want to be a vendor
+  </label>
 
-        {{-- Vendor extra fields (shown when checkbox is on) --}}
-        <div id="vendor-extra" class="vendor-extra" {{ old('register_as_vendor') ? '' : 'hidden' }}>
-          <div class="grid-2">
-            <div>
-              <label>Shop name</label>
-              <input type="text" name="shop_name" value="{{ old('shop_name') }}" />
-            </div>
-            <div>
-              <label>Description</label>
-              <input type="text" name="description" value="{{ old('description') }}" />
-            </div>
-          </div>
+  {{-- Vendor extra fields (only visible when checked) --}}
+  <div id="vendor-extra"
+       class="vendor-extra"
+       {{ old('register_as_vendor') ? '' : 'hidden' }}
+       style="margin-top:1rem;">
 
-          <label>Heritage Story</label>
-          <textarea name="heritage_story" rows="3">{{ old('heritage_story') }}</textarea>
+    <div class="grid-2">
+      <div>
+        <label>Shop name</label>
+        <input type="text"
+               name="shop_name"
+               value="{{ old('shop_name') }}"
+               @if(old('register_as_vendor')) required @endif />
+      </div>
+      <div>
+  <label>Vendor Category</label>
+  <select name="vendor_category" @if(old('register_as_vendor')) required @endif>
+    <option value="">Select category…</option>
+    <option value="Handloom & Textiles" {{ old('vendor_category') == 'Handloom & Textiles' ? 'selected' : '' }}>Handloom & Textiles</option>
+    <option value="Embroidery & Needlework" {{ old('vendor_category') == 'Embroidery & Needlework' ? 'selected' : '' }}>Embroidery & Needlework</option>
+    <option value="Pottery & Terracotta" {{ old('vendor_category') == 'Pottery & Terracotta' ? 'selected' : '' }}>Pottery & Terracotta</option>
+    <option value="Woodcraft & Bamboo" {{ old('vendor_category') == 'Woodcraft & Bamboo' ? 'selected' : '' }}>Woodcraft & Bamboo</option>
+    <option value="Metal & Brassware" {{ old('vendor_category') == 'Metal & Brassware' ? 'selected' : '' }}>Metal & Brassware</option>
+    <option value="Jewelry & Ornaments" {{ old('vendor_category') == 'Jewelry & Ornaments' ? 'selected' : '' }}>Jewelry & Ornaments</option>
+    <option value="Painting & Folk Art" {{ old('vendor_category') == 'Painting & Folk Art' ? 'selected' : '' }}>Painting & Folk Art</option>
+    <option value="Leather Craft" {{ old('vendor_category') == 'Leather Craft' ? 'selected' : '' }}>Leather Craft</option>
+    <option value="Stone & Shell Craft" {{ old('vendor_category') == 'Stone & Shell Craft' ? 'selected' : '' }}>Stone & Shell Craft</option>
+    <option value="Musical Instruments" {{ old('vendor_category') == 'Musical Instruments' ? 'selected' : '' }}>Musical Instruments</option>
+    <option value="Food Heritage" {{ old('vendor_category') == 'Food Heritage' ? 'selected' : '' }}>Food Heritage</option>
+    <option value="Folk Toys & Dolls" {{ old('vendor_category') == 'Folk Toys & Dolls' ? 'selected' : '' }}>Folk Toys & Dolls</option>
+    <option value="Festive & Ritual Items" {{ old('vendor_category') == 'Festive & Ritual Items' ? 'selected' : '' }}>Festive & Ritual Items</option>
+    <option value="Herbal & Natural Products" {{ old('vendor_category') == 'Herbal & Natural Products' ? 'selected' : '' }}>Herbal & Natural Products</option>
+  </select>
+</div>
 
-          <label>Address</label>
-          <input type="text" name="address" value="{{ old('address') }}" maxlength="255" />
+      <div>
+        <label>Description</label>
+        <input type="text"
+               name="description"
+               value="{{ old('description') }}" />
+      </div>
+    </div>
 
-          <div class="grid-2">
-            <div>
-              <label>Phone</label>
-              <input
-                type="tel"
-                name="phone"
-                value="{{ old('phone') }}"
-                pattern="[\d+\-\s()]{6,}"
-                title="Enter a valid phone number (digits, +, -, () allowed)"
-              />
-            </div>
-            <div>
-              <label>District</label>
-              <input type="text" name="district" value="{{ old('district') }}" maxlength="100" />
-            </div>
-          </div>
+    <label>Heritage Story</label>
+    <textarea name="heritage_story" rows="3">{{ old('heritage_story') }}</textarea>
 
-          <label>Shop Logo (optional)</label>
-          <input type="file" name="shop_logo" accept="image/png,image/jpeg,image/webp" />
-        </div>
+    <label>Address</label>
+    <input type="text"
+           name="address"
+           value="{{ old('address') }}"
+           maxlength="255" />
 
-        <button class="btn primary" type="submit">Register</button>
+    <div class="grid-2">
+      <div>
+        <label>Phone</label>
+        <input type="tel"
+               name="phone"
+               value="{{ old('phone') }}"
+               pattern="[\d+\-\s()]{6,}"
+               title="Enter a valid phone number (digits, +, -, () allowed)"
+               @if(old('register_as_vendor')) required @endif />
+      </div>
 
-        {{-- Register errors list (only when not a login error) --}}
-        @if ($errors->any() && !$errors->has('login'))
-          <div class="bg-red-100 text-red-700 px-3 py-2 rounded mt-3">
-            <ul class="list-disc list-inside text-sm">
-              @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-              @endforeach
-            </ul>
-          </div>
-        @endif
-      </form>
+      <div>
+        <label>District</label>
+        <select name="district_id" @if(old('register_as_vendor')) required @endif>
+          <option value="">Select district…</option>
+          @foreach(($districts ?? []) as $d)
+            <option value="{{ $d->id }}"
+              {{ (string)old('district_id') === (string)$d->id ? 'selected' : '' }}>
+              {{ $d->name }}
+            </option>
+          @endforeach
+        </select>
+      </div>
+    </div>
+
+    <label>Shop Logo (optional)</label>
+    <input type="file"
+           name="shop_logo"
+           accept="image/png,image/jpeg,image/webp" />
+  </div>
+
+  <button class="btn primary" type="submit">Register</button>
+
+  {{-- Errors (non-login) --}}
+  @if ($errors->any() && !$errors->has('login'))
+    <div class="bg-red-100 text-red-700 px-3 py-2 rounded mt-3">
+      <ul class="list-disc list-inside text-sm">
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
+</form>
+
+{{-- Toggle script --}}
+<script>
+  (function () {
+    const box = document.getElementById('register_as_vendor');
+    const area = document.getElementById('vendor-extra');
+    function toggle() {
+      if (!box) return;
+      if (box.checked) {
+        area.removeAttribute('hidden');
+      } else {
+        area.setAttribute('hidden', 'hidden');
+      }
+    }
+    if (box) {
+      box.addEventListener('change', toggle);
+      // run once on load as fallback
+      toggle();
+    }
+  })();
+</script>
+
     </div> {{-- /.auth-content --}}
   </div>   {{-- /.modal-card --}}
 </div>     {{-- /#auth-modal --}}
