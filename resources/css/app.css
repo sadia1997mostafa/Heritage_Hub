@@ -471,3 +471,257 @@ body.hh-body{
 }
 .panel-item { display:block; width:100%; text-align:left; background:#fff; border:1px solid #e9e2d6; border-radius:10px; padding:8px 10px; cursor:pointer; text-decoration:none; color:inherit; }
 .panel-item:hover { background:#fff7eb; }
+
+
+/* login /signup */
+/* ===== Heritage Hub — Auth Modal (drop-in replacement) ===== */
+:root{
+  /* Palette */
+  --hh-bg-dim: rgba(28, 18, 10, 0.86);
+  --hh-pane-1: rgba(255, 248, 234, 0.96);   /* parchment */
+  --hh-pane-2: rgba(246, 238, 226, 0.97);
+  --hh-ink:    #2C1F17;                     /* deep cocoa */
+  --hh-mute:   #8A7868;
+  --hh-gold:   #D9A441;
+  --hh-gold-2: #C9932D;
+  --hh-brown:  #6B4E3D;
+
+  /* Effects */
+  --hh-radius-xl: 24px;
+  --hh-shadow-lg: 0 18px 50px rgba(58, 41, 28, .28), 0 6px 18px rgba(58,41,28,.18);
+  --hh-ring: 0 0 0 3px rgba(217, 164, 65, .20);
+  --hh-blur: 6px;
+}
+
+/* Dim backdrop with a soft vignette */
+#auth-modal{
+  display:none;
+  position:fixed; inset:0;
+  z-index:9999;
+  background: radial-gradient(80% 100% at 50% 40%, rgba(0,0,0,.08) 0%, rgba(0,0,0,.25) 52%, rgba(0,0,0,.50) 100%), var(--hh-bg-dim);
+  backdrop-filter: blur(var(--hh-blur));
+  -webkit-backdrop-filter: blur(var(--hh-blur));
+  transition: opacity .35s ease;
+  opacity:0;
+}
+#auth-modal.show{ display:block; opacity:1; }
+
+/* Parchment card with gilded glow */
+#auth-modal .modal-inner{
+  position:absolute; left:50%; top:50%;
+  transform: translate(-50%,-50%) scale(.96);
+  opacity:0;
+  width:min(92vw, 440px);
+  padding:2.2rem 2rem 2rem;
+  color:var(--hh-ink);
+  background: linear-gradient(145deg, var(--hh-pane-1), var(--hh-pane-2));
+  border-radius: var(--hh-radius-xl);
+  box-shadow: var(--hh-shadow-lg);
+  border:1.5px solid color-mix(in srgb, var(--hh-gold), #fff 35%);
+
+  /* golden rim glow */
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--hh-gold), #fff 30%) inset,
+    0 20px 55px rgba(0,0,0,.18),
+    0 0 42px rgba(217,164,65,.22);
+}
+#auth-modal.show .modal-inner{
+  opacity:1;
+  transform: translate(-50%,-50%) scale(1);
+  transition: transform .38s cubic-bezier(.22,.9,.22,1), opacity .38s ease;
+}
+
+/* Decorative corner leaf (subtle) */
+#auth-modal .modal-inner::after{
+  content:"";
+  position:absolute; inset:-1px;
+  border-radius:inherit;
+  pointer-events:none;
+  background:
+    radial-gradient(22rem 18rem at 95% 0%, rgba(217,164,65,.14), transparent 50%),
+    radial-gradient(20rem 16rem at 0% 105%, rgba(107,78,61,.09), transparent 55%);
+}
+
+/* Close button — elegant */
+#close-auth-modal{
+  position:absolute; top:12px; right:14px;
+  width:34px; height:34px;
+  display:grid; place-items:center;
+  background:transparent;
+  border:0; border-radius:10px;
+  color:var(--hh-gold-2);
+  font-size:1.5rem; line-height:1;
+  cursor:pointer;
+  transition: transform .2s ease, background .2s ease, color .2s ease;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.15));
+}
+#close-auth-modal:hover{ transform: rotate(90deg) scale(1.06); color:var(--hh-brown); background: rgba(217,164,65,.10); }
+
+/* Headings (if you add one) */
+#auth-modal .modal-title{
+  font-family: "Inter","Hind Siliguri", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700; letter-spacing:.2px;
+  font-size:1.25rem; margin-bottom:.35rem;
+  color: var(--hh-brown);
+}
+
+/* Inputs */
+#auth-modal .modal-inner label{
+  display:block; font-size:.92rem; font-weight:600;
+  color: color-mix(in srgb, var(--hh-ink), #000 6%);
+}
+#auth-modal .modal-inner input,
+#auth-modal .modal-inner select,
+#auth-modal .modal-inner textarea{
+  width:100%; max-width:100%;
+  display:block;
+  margin-top:.35rem; margin-bottom:1rem;
+  padding:.72em .95em;
+  font-size:1.03rem;
+  border-radius:10px;
+  border:1.2px solid color-mix(in srgb, var(--hh-mute), #fff 22%);
+  background:#FFF9F0;
+  color:var(--hh-ink);
+  box-shadow: 0 1px 0 rgba(0,0,0,.04);
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease, transform .06s ease;
+}
+#auth-modal .modal-inner input:hover{
+  background:#FFF6E7;
+}
+#auth-modal .modal-inner input:focus{
+  outline:0;
+  border-color: var(--hh-gold);
+  box-shadow: var(--hh-ring), 0 1px 0 rgba(0,0,0,.05);
+  background:#FFF6E5;
+}
+#auth-modal .modal-inner input:active{
+  transform: translateY(1px);
+}
+
+/* Checkbox row */
+#auth-modal .remember-row{
+  display:flex; align-items:center; gap:.55rem;
+  margin:.2rem 0 1rem;
+  font-size:.95rem; color: color-mix(in srgb, var(--hh-ink), #000 10%);
+}
+#auth-modal .remember-row input[type="checkbox"]{
+  width:18px; height:18px; border-radius:4px;
+}
+
+/* Primary button */
+#auth-modal .modal-inner button[type="submit"],
+#auth-modal .modal-inner .btn.btn-primary{
+  width:100%;
+  margin-top:.25rem;
+  padding:.8em 1em;
+  font-weight:800;
+  font-size:1.05rem;
+  border:0; border-radius:12px;
+  color:#fffdf4;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--hh-gold), #fff 10%), var(--hh-gold-2));
+  box-shadow:
+    0 12px 30px rgba(217,164,65,.28),
+    0 1px 0 rgba(255,255,255,.45) inset;
+  transition: transform .08s ease, filter .25s ease, box-shadow .25s ease, background .25s ease;
+}
+#auth-modal .modal-inner button[type="submit"]:hover,
+#auth-modal .modal-inner .btn.btn-primary:hover{
+  filter: saturate(105%);
+  box-shadow:
+    0 16px 38px rgba(217,164,65,.36),
+    0 1px 0 rgba(255,255,255,.55) inset;
+}
+#auth-modal .modal-inner button[type="submit"]:active{
+  transform: translateY(1px);
+}
+
+/* Links (forgot password, etc.) */
+#auth-modal .modal-actions{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:.85rem; font-size:.92rem;
+}
+#auth-modal .modal-actions a{
+  color: var(--hh-brown); text-underline-offset: 3px;
+}
+#auth-modal .modal-actions a:hover{ color: var(--hh-gold-2); }
+
+/* Divider (if you add social) */
+#auth-modal .divider{
+  margin:1.2rem 0; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,.08), transparent);
+  position:relative;
+}
+#auth-modal .divider::after{
+  content:"or"; position:absolute; inset:auto; left:50%; top:-.7rem;
+  transform:translateX(-50%);
+  padding:.2rem .6rem; border-radius:999px;
+  background: #fff8ec; color:#8b745e; font-size:.78rem; letter-spacing:.04em;
+  border:1px solid rgba(0,0,0,.06);
+}
+
+/* Motion-respect */
+@media (prefers-reduced-motion: reduce){
+  #auth-modal, #auth-modal .modal-inner{ transition:none !important; }
+  #close-auth-modal{ transition:none !important; }
+}
+
+/* Optional: “shake” for invalid submit (add .shake via JS) */
+#auth-modal .modal-inner.shake{
+  animation: hh-shake .4s ease;
+}
+@keyframes hh-shake{
+  10%, 90% { transform: translate(-50%,-50%) translateX(-1px); }
+  20%, 80% { transform: translate(-50%,-50%) translateX(2px);  }
+  30%, 50%, 70% { transform: translate(-50%,-50%) translateX(-4px); }
+  40%, 60% { transform: translate(-50%,-50%) translateX(4px); }
+}
+
+
+/* --- Heritage Hub Modal Enhancements --- */
+
+/* Forgot Password link — darker + elegant hover */
+#auth-modal .modal-actions a {
+  color: #4B3621; /* dark coffee */
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color .2s ease;
+}
+#auth-modal .modal-actions a:hover {
+  color: #D9A441; /* gold accent */
+}
+
+/* Darker, stylish buttons */
+#auth-modal .modal-inner button[type="submit"],
+#auth-modal .modal-inner .btn.btn-primary {
+  width: 100%;
+  margin-top: .5rem;
+  padding: .85em 1em;
+  font-weight: 800;
+  font-size: 1.08rem;
+  border: none;
+  border-radius: 12px;
+
+  /* deep brown with golden highlight */
+  background: linear-gradient(180deg, #5A3C2E, #3C271D);
+  color: #fdf8f1;
+
+  box-shadow:
+    0 14px 32px rgba(60, 39, 29, .35),
+    0 0 0 1px rgba(217, 164, 65, .25) inset;
+  transition: transform .1s ease, background .25s ease, box-shadow .25s ease;
+}
+
+/* Hover: golden glow */
+#auth-modal .modal-inner button[type="submit"]:hover,
+#auth-modal .modal-inner .btn.btn-primary:hover {
+  background: linear-gradient(180deg, #6B4E3D, #4B3428);
+  box-shadow:
+    0 18px 38px rgba(90, 60, 46, .45),
+    0 0 12px rgba(217, 164, 65, .4);
+}
+
+/* Active press feedback */
+#auth-modal .modal-inner button[type="submit"]:active {
+  transform: translateY(1px);
+}

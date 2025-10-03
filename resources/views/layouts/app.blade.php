@@ -47,16 +47,17 @@
         </li>
 
         @auth
-          <li><a href="{{ route('home') }}">Hi, {{ auth()->user()->name }}</a></li>
-          <li>
-            <form action="{{ route('logout') }}" method="POST">@csrf
-              <button type="submit" class="linklike">Logout</button>
-            </form>
-          </li>
-        @else
-          @if(Route::has('login')) <li><a href="{{ route('login') }}">Login</a></li> @endif
-          @if(Route::has('register')) <li><a class="accent" href="{{ route('register') }}">Sign Up</a></li> @endif
-        @endauth
+  <li><a href="{{ route('home') }}">Hi, {{ auth()->user()->name }}</a></li>
+  <li>
+    <form action="{{ route('auth.logout') }}" method="POST">@csrf
+      <button type="submit" class="linklike">Logout</button>
+    </form>
+  </li>
+@else
+  <li><a href="#" data-auth-open="login">Login</a></li>
+  <li><a class="accent" href="#" data-auth-open="register">Sign Up</a></li>
+@endauth
+
       </ul>
     </div>
   </div>
@@ -220,6 +221,7 @@
     </div>
     <div class="copy">© {{ date('Y') }} Heritage Hub</div>
   </footer>
+@includeIf('partials.auth-modal-fixed')
 
 </body>
 </html>
