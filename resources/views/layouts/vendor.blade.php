@@ -24,6 +24,11 @@
            class="nav-link {{ request()->routeIs('vendor.store.*') ? 'active' : '' }}">
           Store Profile
         </a>
+        <a href="{{ route('vendor.products.index') }}"
+   class="{{ request()->routeIs('vendor.products.*') ? 'active' : '' }}">
+  Products
+</a>
+
         <a href="{{ route('vendor.payout.form') }}"
            class="nav-link {{ request()->routeIs('vendor.payout.*') ? 'active' : '' }}">
           Payout

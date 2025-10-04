@@ -14,6 +14,11 @@
         <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard')?'active':'' }}">Dashboard</a>
         <a href="{{ route('admin.vendors.index') }}" class="{{ request()->routeIs('admin.vendors.*')?'active':'' }}">Vendors</a>
         <a href="{{ route('admin.payouts.index') }}" class="{{ request()->routeIs('admin.payouts.*')?'active':'' }}">Payouts</a>
+        <a href="{{ route('admin.products.index') }}"
+   class="{{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+  Products
+</a>
+
         <a href="{{ route('home') }}">← Back to Site</a>
       </nav>
     </aside>

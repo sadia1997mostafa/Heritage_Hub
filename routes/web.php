@@ -75,6 +75,10 @@ Route::middleware(['auth:vendor', 'vendor.approved'])->group(function () {
 
     Route::get('/vendor/payout',       [VendorOnboardingController::class,'payoutForm'])->name('vendor.payout.form');
     Route::post('/vendor/payout',      [VendorOnboardingController::class,'payoutSave'])->name('vendor.payout.save');
+    Route::get('/products', [\App\Http\Controllers\Vendor\ProductController::class,'index'])->name('vendor.products.index');
+    Route::get('/products/create', [\App\Http\Controllers\Vendor\ProductController::class,'create'])->name('vendor.products.create');
+    Route::post('/products', [\App\Http\Controllers\Vendor\ProductController::class,'store'])->name('vendor.products.store');
+    Route::post('/products/{product}/submit', [\App\Http\Controllers\Vendor\ProductController::class,'submit'])->name('vendor.products.submit');
 });
 
 /*
@@ -87,10 +91,16 @@ Route::middleware(['auth:admin'])->group(function () {
    Route::get('/payouts',                [AdminPayoutController::class,'index'])->name('admin.payouts.index');
 Route::post('/payouts/{payout}/ok',   [AdminPayoutController::class,'approve'])->name('admin.payouts.approve');
 Route::post('/payouts/{payout}/nope', [AdminPayoutController::class,'reject'])->name('admin.payouts.reject');
+
+
     Route::prefix('admin')->group(function () {
         Route::get('/vendors',                   [AdminVendorController::class,'index'])->name('admin.vendors.index');
         Route::get('/vendors/{profile}',         [AdminVendorController::class,'show'])->name('admin.vendors.show');
         Route::post('/vendors/{profile}/approve',[AdminVendorController::class,'approve'])->name('admin.vendors.approve');
         Route::post('/vendors/{profile}/reject', [AdminVendorController::class,'reject'])->name('admin.vendors.reject');
+
+        Route::get('/products', [\App\Http\Controllers\Admin\ProductApprovalController::class,'index'])->name('admin.products.index');
+    Route::post('/products/{product}/approve', [\App\Http\Controllers\Admin\ProductApprovalController::class,'approve'])->name('admin.products.approve');
+    Route::post('/products/{product}/reject', [\App\Http\Controllers\Admin\ProductApprovalController::class,'reject'])->name('admin.products.reject');
     });
 });

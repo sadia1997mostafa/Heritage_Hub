@@ -10,5 +10,10 @@ class AdminDashboardController extends Controller
     {
         $admin = auth('admin')->user(); // the Admin model
         return view('admin.dashboard', compact('admin'));
+        $pendingProducts = Product::where('status','submitted')->count();
+
+        return view('admin.dashboard', [
+            'pendingProducts' => $pendingProducts,
+        ]);
     }
 }
