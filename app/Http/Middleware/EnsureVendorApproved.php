@@ -8,15 +8,34 @@ use App\Models\VendorProfile;
 
 class EnsureVendorApproved
 {
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function handle(Request $request, Closure $next)
     {
-        $u = $request->user();
-        if (!$u) abort(401);
+        // Get the authenticated vendor from the vendor guard
+        $vendorUser = $request->user('vendor');
 
-        $p = VendorProfile::where('user_id',$u->id)->first();
-        if (!$p || $p->status !== 'approved') {
-            abort(403, 'Vendor not approved yet.');
+        if (!$vendorUser) {
+            // If not authenticated as vendor, send them to login
+            return redirect()->route('login')->withErrors([
+                'login' => 'Please log in as vendor first.',
+            ]);
         }
+
+        // Fetch vendor profile
+        $profile = VendorProfile::where('user_id', $vendorUser->id)->first();
+
+        if (!$profile || $profile->status !== 'approved') {
+            // If no profile or not yet approved, block access
+            abort(403, 'Your vendor account is not approved yet.');
+        }
+
         return $next($request);
     }
 }
+

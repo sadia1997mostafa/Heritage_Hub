@@ -1,0 +1,284 @@
+/* ================================
+   HeritageHub Vendor UI (elegant/animated)
+   File: public/css/vendor.css
+   ================================ */
+
+:root{
+  --bg:        #F5EFE6;        /* parchment */
+  --ink:       #2A1C14;        /* deep brown */
+  --muted:     #7B6A5B;        /* soft brown */
+  --brand:     #6B4E3D;        /* cocoa */
+  --brand-600: #5A3E2B;        /* deeper cocoa */
+  --accent:    #D9A441;        /* antique gold */
+  --terracotta:#B67352;        /* clay */
+  --shadow: 0 16px 42px rgba(42,28,20,.12);
+  --ring: 0 0 0 4px rgba(217,164,65,.22);    /* focus glow */
+  --radius: 14px;
+}
+
+/* Motion guard */
+@media (prefers-reduced-motion: reduce){
+  * { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+}
+
+/* Fonts / Global */
+html,body{height:100%}
+html{scroll-behavior:smooth}
+body{
+  background: radial-gradient(1400px 800px at 10% -10%, #fff 0, var(--bg) 45%, var(--bg) 100%);
+  color: var(--ink);
+  margin:0;
+  font: 16px/1.5 "Inter", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+
+/* Utility */
+.container{max-width:1120px;margin-inline:auto;padding:24px}
+.hide{display:none!important}
+
+/* ================= Sidebar ================ */
+.vendor-layout{display:flex;min-height:100vh}
+
+.vendor-sidebar{
+  width:260px;
+  background:
+    radial-gradient(120% 120% at 120% -20%, rgba(217,164,65,.2) 0%, transparent 40%),
+    linear-gradient(180deg, var(--brand) 0%, var(--brand-600) 100%);
+  color:#fff;
+  padding:28px 18px;
+  position:sticky; top:0; height:100dvh;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.vendor-sidebar__title{
+  font-weight:800; letter-spacing:.5px; text-transform:uppercase;
+  font-size:.95rem; color:var(--accent); margin:0 0 16px 8px;
+}
+
+.vendor-sidebar nav{display:flex;flex-direction:column;gap:8px}
+
+.nav-link{
+  --hover: rgba(255,255,255,.06);
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:10px; color:#fff; text-decoration:none;
+  position:relative; isolation:isolate; transition:transform .18s ease, background-color .18s ease;
+}
+.nav-link::before{
+  content:""; position:absolute; inset:0; border-radius:inherit;
+  background:linear-gradient(90deg, rgba(217,164,65,.22), transparent);
+  opacity:0; transition:opacity .25s ease;
+}
+.nav-link:hover{ background-color:var(--hover); transform:translateX(2px)}
+.nav-link:hover::before{opacity:1}
+.nav-link.active{
+  background:linear-gradient(90deg, rgba(217,164,65,.2), rgba(255,255,255,.08));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+/* ================= Top bar in content ================ */
+.vendor-header{
+  display:flex; align-items:center; justify-content:space-between;
+  background: rgba(255,255,255,.65);
+  backdrop-filter: blur(6px);
+  padding:14px 18px; border-radius:12px; margin:22px 22px 0;
+  box-shadow: var(--shadow);
+}
+
+/* ================= Main content ================ */
+.vendor-content{flex:1; padding:24px;}
+
+/* ================= Cards ================ */
+.card{
+  background:linear-gradient(180deg, #fff 0%, #fffdfb 100%);
+  border:1px solid rgba(42,28,20,.08);
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow: var(--shadow);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 20px 48px rgba(42,28,20,.16);
+  border-color: rgba(42,28,20,.14);
+}
+.card--glass{
+  background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.66));
+  backdrop-filter: blur(8px);
+}
+
+/* Section titles */
+.section-title{
+  margin:4px 0 14px; font-size:1.25rem; color:var(--brand-600); font-weight:800;
+  letter-spacing:.2px;
+}
+
+/* ================= Buttons ================ */
+.btn{
+  -webkit-tap-highlight-color: transparent;
+  position:relative; overflow:hidden;
+  display:inline-flex; align-items:center; gap:10px;
+  padding:10px 16px; border-radius:12px; border:none; cursor:pointer;
+  font-weight:700; letter-spacing:.2px;
+  transition: transform .18s ease, filter .18s ease, background-color .18s ease;
+}
+.btn:active{ transform: translateY(1px) }
+
+.btn-primary{ background:linear-gradient(180deg, var(--brand) 0%, var(--brand-600) 100%); color:#fff; }
+.btn-primary:hover{ filter:brightness(1.04) }
+
+.btn-secondary{ background:linear-gradient(180deg, var(--accent) 0%, #c99a33 100%); color:var(--ink) }
+.btn-ghost{ background:transparent; color:var(--brand-600); box-shadow:inset 0 0 0 1px rgba(42,28,20,.18) }
+.btn-ghost:hover{ background:rgba(42,28,20,.04) }
+
+/* Ripple (no JS) */
+.btn::after{
+  content:""; position:absolute; inset:auto; width:0; height:0;
+  background:radial-gradient(120px 120px at center, rgba(255,255,255,.6), transparent 60%);
+  transform:translate(-50%,-50%); border-radius:50%; opacity:0; pointer-events:none;
+}
+.btn:active::after{
+  left:var(--x,50%); top:var(--y,50%); width:220px; height:220px; opacity:.4; transition:opacity .6s ease,width .6s ease,height .6s ease;
+}
+
+/* Provide coordinates for ripple via click */
+.btn:where(:hover){ --x:50%; --y:50% }
+
+/* ================= Badges & Status ================= */
+.badge{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 10px; border-radius:999px; font-size:.78rem; font-weight:700;
+  letter-spacing:.2px;
+}
+.badge--approved{ color:#146c43; background:#e8f6ed; border:1px solid #cde9d8 }
+.badge--pending{ color:#8a5a07; background:#fff7d6; border:1px solid #fde69a }
+.badge--rejected{ color:#8f1d1d; background:#fee6e5; border:1px solid #ffc9c6 }
+
+/* ================= Forms ================ */
+.form-grid{display:grid; gap:16px}
+.form-grid.two{grid-template-columns:1fr 1fr}
+.form-grid.three{grid-template-columns:repeat(3,1fr)}
+@media (max-width:900px){ .form-grid.two,.form-grid.three{grid-template-columns:1fr} }
+
+.field{position:relative}
+.field input,
+.field select,
+.field textarea{
+  width:100%; padding:14px 14px; border-radius:12px;
+  border:1px solid rgba(42,28,20,.22); background:#fff;
+  transition:border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+  font-size:.98rem; color:var(--ink);
+}
+.field textarea{ min-height:120px; resize:vertical }
+.field input::placeholder,
+.field textarea::placeholder{ color:rgba(42,28,20,.4) }
+.field input:focus,
+.field select:focus,
+.field textarea:focus{ outline:none; border-color:var(--accent); box-shadow: var(--ring) }
+
+/* Float label (no JS, via :placeholder-shown) */
+.floating{
+  --padY:14px; --padX:14px;
+}
+.floating input,
+.floating textarea{
+  padding-top:calc(var(--padY) + 10px);
+}
+.floating label{
+  position:absolute; left:var(--padX); top:11px; pointer-events:none;
+  color:rgba(42,28,20,.56); transition: transform .18s ease, color .18s ease, font-size .18s ease;
+  background:linear-gradient(180deg, #fff 30%, transparent 30%); padding:0 6px;
+}
+.floating :is(input,textarea):focus + label,
+.floating :is(input,textarea):not(:placeholder-shown) + label{
+  transform: translateY(-16px) scale(.92);
+  color:var(--brand-600);
+}
+
+/* Input with icon */
+.input-icon{ position:relative }
+.input-icon .icon{
+  position:absolute; left:12px; top:50%; transform:translateY(-50%); color:rgba(42,28,20,.45);
+}
+.input-icon input{ padding-left:40px }
+
+/* File input */
+.file{
+  display:flex; align-items:center; gap:10px; padding:10px; border-radius:12px;
+  border:1px dashed rgba(42,28,20,.25); background:rgba(255,255,255,.7);
+}
+.file input[type="file"]{ display:none }
+.file .pick{ cursor:pointer; padding:8px 12px; border-radius:10px; background:rgba(42,28,20,.06) }
+.file .pick:hover{ background:rgba(42,28,20,.1) }
+
+/* ================= Tables (for statements later) ================ */
+.table{
+  width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:12px; box-shadow: var(--shadow);
+}
+.table thead th{
+  text-align:left; font-size:.82rem; text-transform:uppercase; letter-spacing:.08em;
+  background: linear-gradient(180deg, #fff 0, #fff7eb 100%); color:var(--brand-600);
+  padding:12px 14px; border-bottom:1px solid rgba(42,28,20,.1);
+}
+.table tbody td{ padding:14px; border-bottom:1px solid rgba(42,28,20,.06) }
+.table tbody tr:hover{ background:#fffdf8 }
+
+/* ================= Alerts & Toast ================= */
+.alert{ padding:12px 14px; border-radius:12px; border:1px solid; font-weight:600 }
+.alert--success{ background:#e9f7ee; color:#155e36; border-color:#c7e9d2 }
+.alert--warn{ background:#fff8e6; color:#875a08; border-color:#fde49f }
+.alert--error{ background:#fde9e9; color:#8f1d1d; border-color:#ffc9c6 }
+
+.toast{
+  position:fixed; right:24px; bottom:24px; z-index:60;
+  background:#fff; border:1px solid rgba(42,28,20,.08); padding:12px 14px; border-radius:12px; box-shadow: var(--shadow);
+  animation: slideUp .35s ease both;
+}
+
+/* ================= Skeleton Shimmer ================= */
+.skeleton{
+  position:relative; overflow:hidden; background:linear-gradient(180deg,#eee,#f5f2ec);
+  border-radius:10px; min-height:14px;
+}
+.skeleton::after{
+  content:""; position:absolute; inset:0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* ================= Images ================= */
+.logo{
+  width:64px; height:64px; border-radius:12px; object-fit:cover;
+  box-shadow: 0 6px 18px rgba(42,28,20,.15);
+}
+.banner{
+  width:100%; aspect-ratio: 16/5; object-fit:cover; border-radius:12px; box-shadow: var(--shadow);
+}
+
+/* ================= Tabs ================= */
+.tabs{ display:flex; gap:8px; background:#fff; border-radius:12px; padding:6px; box-shadow: var(--shadow); width:max-content }
+.tab{
+  padding:8px 14px; border-radius:10px; color:var(--muted); cursor:pointer; user-select:none;
+  transition: background .2s ease, color .2s ease;
+}
+.tab:hover{ background:rgba(42,28,20,.05) }
+.tab.active{ background: linear-gradient(180deg, #fff8ea, #fff); color:var(--brand-600); box-shadow: inset 0 0 0 1px rgba(42,28,20,.1) }
+
+/* ================= Animations ================= */
+@keyframes shimmer{
+  100%{ transform: translateX(100%) }
+}
+@keyframes slideUp{
+  from{ transform: translateY(8px); opacity:0 } to{ transform: translateY(0); opacity:1 }
+}
+
+/* ================= Helpers ================= */
+.mt-0{margin-top:0}.mt-1{margin-top:6px}.mt-2{margin-top:10px}.mt-3{margin-top:14px}.mt-4{margin-top:20px}
+.mb-0{margin-bottom:0}.mb-1{margin-bottom:6px}.mb-2{margin-bottom:10px}.mb-3{margin-bottom:14px}.mb-4{margin-bottom:20px}
+.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}.gap-2{gap:10px}.gap-3{gap:14px}
+
+/* ================= Example status header ================= */
+.header-row{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  margin: 8px 0 18px;
+}
+.header-actions{display:flex; align-items:center; gap:12px}
