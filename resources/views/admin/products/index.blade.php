@@ -27,9 +27,9 @@
 <div class="card">
   <h3>Approved Products</h3>
   <table class="table">
-    <tr><th>Title</th><th>Category</th></tr>
+    <tr><th>Title</th><th>Category</th><th>Price (৳)</th></tr>
     @foreach($approved as $p)
-      <tr><td>{{ $p->title }}</td><td>{{ $p->category->name }}</td></tr>
+      <tr><td>{{ $p->title }}</td><td>{{ $p->category->name }}</td><td>৳ {{ number_format($p->price, 2) }}</td></tr>
     @endforeach
   </table>
 </div>

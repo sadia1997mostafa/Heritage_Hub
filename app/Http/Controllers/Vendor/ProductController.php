@@ -11,50 +11,106 @@ use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+    /**
+     * Show all products belonging to the current vendor.
+     */
     public function index()
     {
-        $vendor = auth()->user()->vendorProfile;
-        $products = Product::where('vendor_id', $vendor->id)->latest()->get();
+        $vendorProfile = auth()->user()->vendorProfile;
+
+        if (!$vendorProfile) {
+            return redirect()->route('vendor.store.setup')
+                ->withErrors(['You need to complete your vendor profile first.']);
+        }
+
+        $products = Product::where('vendor_id', $vendorProfile->id)
+            ->with('category')
+            ->latest()
+            ->get();
+
         return view('vendor.products.index', compact('products'));
     }
 
+    /**
+     * Show the form to create a new product.
+     */
     public function create()
     {
-        $categories = Category::all();
+        $vendorProfile = auth()->user()->vendorProfile;
+
+        if (!$vendorProfile) {
+            return redirect()->route('vendor.store.setup')
+                ->withErrors(['You need to complete your vendor profile first.']);
+        }
+
+        $categories = Category::orderBy('name')->get();
+
         return view('vendor.products.create', compact('categories'));
     }
 
+    /**
+     * Store the newly created product.
+     */
     public function store(Request $request)
     {
-        $vendor = auth()->user()->vendorProfile;
+        $vendorProfile = auth()->user()->vendorProfile;
+
+        if (!$vendorProfile) {
+            return redirect()->route('vendor.store.setup')
+                ->withErrors(['You need to complete your vendor profile first.']);
+        }
 
         $validated = $request->validate([
-            'title'=>'required|string|max:255',
-            'category_id'=>'required|exists:categories,id',
-            'description'=>'nullable|string',
-            'stock'=>'required|integer|min:0',
-            'images.*'=>'nullable|image|max:2048'
+            'title'       => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'nullable|string',
+            'stock'       => 'required|integer|min:0',
+            'price'       => 'required|numeric|min:0',
+            'images.*'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        // ✅ Create the product
         $product = Product::create([
-            ...$validated,
-            'vendor_id'=>$vendor->id,
-            'slug'=>Str::slug($validated['title']).'-'.uniqid(),
+            'vendor_id'   => $vendorProfile->id,
+            'category_id' => $validated['category_id'],
+            'title'       => $validated['title'],
+            'slug'        => Str::slug($validated['title']) . '-' . uniqid(),
+            'description' => $validated['description'] ?? null,
+            'stock'       => $validated['stock'],
+            'price'       => $validated['price'],
+            'status'      => 'draft',
         ]);
 
+        // ✅ Upload product images if any
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $img) {
-                $path = $img->store('products','public');
-                ProductMedia::create(['product_id'=>$product->id,'path'=>$path]);
+                $path = $img->store('products', 'public');
+                ProductMedia::create([
+                    'product_id' => $product->id,
+                    'path'       => $path,
+                ]);
             }
         }
 
-        return redirect()->route('vendor.products.index')->with('status','Product saved!');
+        return redirect()
+            ->route('vendor.products.index')
+            ->with('status', '✅ Product saved successfully!');
     }
 
+    /**
+     * Submit a product for admin approval.
+     */
     public function submit(Product $product)
     {
-        $product->update(['status'=>'submitted']);
-        return back()->with('status','Product submitted for approval.');
+        $vendorProfile = auth()->user()->vendorProfile;
+
+        // Check if this product belongs to the current vendor
+        if ($product->vendor_id !== $vendorProfile->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $product->update(['status' => 'submitted']);
+
+        return back()->with('status', '📤 Product submitted for admin approval.');
     }
 }

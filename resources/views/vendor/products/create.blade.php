@@ -22,6 +22,13 @@
       <label>Description</label>
       <textarea name="description" class="input" rows="3">{{ old('description') }}</textarea>
     </div>
+    {{-- Price --}}
+<div class="field">
+  <input class="input" type="number" step="0.01" min="0"
+         name="price" value="{{ old('price') }}" placeholder=" " required />
+  <label class="floating">Price (৳) *</label>
+</div>
+
     <div style="margin-bottom:10px">
       <label>Stock</label>
       <input type="number" name="stock" class="input" min="0" value="0">

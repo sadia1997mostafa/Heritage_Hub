@@ -93,6 +93,7 @@
         <tr>
           <th>Title</th>
           <th>Category</th>
+          <th>Price (৳)</th>
           <th>Status</th>
           <th style="width:1%">Actions</th>
         </tr>
@@ -100,6 +101,7 @@
           <tr>
             <td>{{ $p->title }}</td>
             <td>{{ $p->category->name ?? '—' }}</td>
+            <td>৳ {{ number_format($p->price, 2) }}</td>
             <td><span class="badge {{ $p->status }}">{{ ucfirst($p->status) }}</span></td>
             <td class="nowrap">
               @if($p->status === 'draft')
