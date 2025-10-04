@@ -1,0 +1,67 @@
+:root{
+  --bg:#F5EFE6; --ink:#2A1C14; --muted:#7B6A5B;
+  --brand:#6B4E3D; --brand-600:#5A3E2B;
+  --accent:#D9A441; --terracotta:#B67352;
+  --shadow:0 18px 50px rgba(42,28,20,.12);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;
+}
+
+/* Layout */
+.admin-shell{display:flex; min-height:100dvh}
+
+/* Sidebar */
+.admin-aside{
+  width:280px; background:linear-gradient(180deg,#6B4E3D 0%, #5A3E2B 100%);
+  color:#fff; padding:22px 18px; position:sticky; top:0; height:100dvh;
+  box-shadow:var(--shadow);
+}
+.admin-brand{font-weight:800; letter-spacing:.04em; color:#f7e6c5; margin-bottom:18px}
+.admin-nav a{
+  display:block; padding:12px 14px; margin:8px 0; color:#fff; text-decoration:none;
+  border-radius:14px; background:rgba(255,255,255,.06);
+  transition:transform .18s ease, background .18s ease;
+}
+.admin-nav a:hover{transform:translateX(4px); background:rgba(255,255,255,.12)}
+.admin-nav a.active{background:#4e3628}
+
+/* Main */
+.admin-main{flex:1; padding:28px 40px}
+.admin-topcard{
+  background:#fff; border-radius:18px; padding:16px 18px;
+  box-shadow:var(--shadow);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.admin-logout{
+  background:#f4ede3; border:0; color:var(--ink); padding:8px 14px; border-radius:10px; cursor:pointer;
+}
+.admin-logout:hover{background:#efe4d6}
+.page-title{font-size:2rem; font-weight:800; margin:24px 0 8px}
+
+/* Content cards */
+.card{
+  background:#fff; border-radius:18px; padding:22px; box-shadow:var(--shadow);
+  animation:rise .35s ease;
+}
+@keyframes rise{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)}}
+
+/* Table */
+.table{width:100%; border-collapse:collapse}
+.table th,.table td{padding:12px 10px}
+.table th{background:#f9f4ea; text-align:left; color:var(--brand-600)}
+.table tr:nth-child(even){background:#fcfaf6}
+.badge{display:inline-block; padding:2px 8px; border-radius:999px; font-size:.8rem}
+.badge.pending{background:var(--accent); color:#fff}
+.badge.ok{background:#4caf50; color:#fff}
+.badge.no{background:var(--terracotta); color:#fff}
+
+.btn{display:inline-block; padding:8px 12px; border-radius:10px; border:0; cursor:pointer}
+.btn.primary{background:var(--brand); color:#fff}
+.btn.primary:hover{background:var(--brand-600)}
+.btn.danger{background:var(--terracotta); color:#fff}
+.btn.ghost{background:#f4ede3}

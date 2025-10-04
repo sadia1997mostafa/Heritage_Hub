@@ -9,6 +9,7 @@ export default defineConfig({
         'resources/css/app.css',
         'resources/css/vendor.css', // compile vendor styles
         'resources/js/app.js',
+        'resources/js/admin.css',  // compile admin styles
       ],
       refresh: true,
     }),

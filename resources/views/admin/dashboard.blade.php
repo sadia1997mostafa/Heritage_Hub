@@ -17,6 +17,8 @@
                 Go to Site Home
             </a>
         </li>
+        <li><a href="{{ route('admin.payouts.index') }}">💰 Payout Approvals</a></li>
+
     </ul>
 </div>
 @endsection

@@ -11,7 +11,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\AdminVendorController;
 use App\Http\Controllers\Vendor\VendorDashboardController;
 use App\Http\Controllers\VendorOnboardingController;
-
+use App\Http\Controllers\Admin\AdminPayoutController;
 /*
 |--------------------------------------------------------------------------
 | Public / Site Routes
@@ -84,7 +84,9 @@ Route::middleware(['auth:vendor', 'vendor.approved'])->group(function () {
 */
 Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-
+   Route::get('/payouts',                [AdminPayoutController::class,'index'])->name('admin.payouts.index');
+Route::post('/payouts/{payout}/ok',   [AdminPayoutController::class,'approve'])->name('admin.payouts.approve');
+Route::post('/payouts/{payout}/nope', [AdminPayoutController::class,'reject'])->name('admin.payouts.reject');
     Route::prefix('admin')->group(function () {
         Route::get('/vendors',                   [AdminVendorController::class,'index'])->name('admin.vendors.index');
         Route::get('/vendors/{profile}',         [AdminVendorController::class,'show'])->name('admin.vendors.show');
