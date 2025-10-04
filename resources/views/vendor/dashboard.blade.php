@@ -1,29 +1,29 @@
 @extends('layouts.app')
-@section('title','Vendor Dashboard')
 
 @section('content')
-  <div class="hh-container pad-section">
-    <h1 class="section-title">Vendor Dashboard</h1>
+<div class="max-w-3xl mx-auto p-6 bg-white shadow rounded">
+    <h1 class="text-2xl font-bold mb-4">Vendor Dashboard</h1>
 
-    <p class="section-text">
-      Hello, <strong>{{ $user->name }}</strong> ({{ $user->email }})
-    </p>
+    <p>Hello, <strong>{{ $vendor->user->name }}</strong> ({{ $vendor->user->email }})</p>
 
-    @if($profile)
-      <div class="card" style="padding:16px;border:1px solid #ddd;border-radius:12px;margin-top:12px">
-        <h3 style="margin:0 0 8px 0">{{ $profile->shop_name }}</h3>
-        <p style="margin:0 0 8px 0">{{ $profile->description }}</p>
-        <p style="margin:0 0 8px 0"><strong>Phone:</strong> {{ $profile->phone }} | <strong>District:</strong> {{ $profile->district }}</p>
-        <p style="margin:0"><strong>Address:</strong> {{ $profile->address }}</p>
-      </div>
-    @else
-      <div class="card" style="padding:16px;border:1px solid #ddd;border-radius:12px;margin-top:12px">
-        <p>No vendor profile found yet.</p>
-      </div>
-    @endif
+    <div class="mt-4 p-4 border rounded bg-gray-50">
+        <h2 class="text-lg font-semibold">{{ $vendor->shop_name }}</h2>
+        <p>{{ $vendor->description }}</p>
 
-    <div style="margin-top:16px">
-      <a class="btn-primary" href="{{ route('home') }}">Go to site home</a>
+        <p><strong>Phone:</strong> {{ $vendor->phone }}</p>
+        <p><strong>District:</strong> {{ $vendor->district?->name ?? '—' }}</p>
+        <p><strong>Address:</strong> {{ $vendor->address }}</p>
+
+        @if($vendor->shop_logo_path)
+            <p class="mt-2">
+                <img src="{{ asset('storage/'.$vendor->shop_logo_path) }}" alt="Shop Logo" class="h-20">
+            </p>
+        @endif
     </div>
-  </div>
+
+    <div class="mt-6 flex gap-3">
+        <a href="{{ route('vendor.store.setup') }}" class="btn btn-primary">Edit Store Profile</a>
+        <a href="{{ route('vendor.payout.form') }}" class="btn btn-secondary">Setup Payout</a>
+    </div>
+</div>
 @endsection

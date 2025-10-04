@@ -7,6 +7,8 @@ use App\Http\Controllers\DistrictPageController;
 use App\Http\Controllers\MultiAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Vendor\VendorDashboardController;
+use App\Http\Controllers\VendorOnboardingController;
+use App\Http\Controllers\AdminVendorController;
 
 
 // Smooth-scroll Home (single Blade page with sections)
@@ -48,4 +50,27 @@ Route::middleware(['auth:vendor'])->group(function () {
 Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
         ->name('admin.dashboard');
+});
+
+
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/vendor/apply',  [VendorOnboardingController::class,'applyForm'])->name('vendor.apply.form');
+    Route::post('/vendor/apply', [VendorOnboardingController::class,'applySubmit'])->name('vendor.apply.submit');
+
+    Route::middleware('vendor.approved')->group(function () {
+        Route::get('/vendor/store/setup', [VendorOnboardingController::class,'setupForm'])->name('vendor.store.setup');
+        Route::post('/vendor/store/setup', [VendorOnboardingController::class,'setupSave'])->name('vendor.store.setup.save');
+        Route::get('/vendor/payout', [VendorOnboardingController::class,'payoutForm'])->name('vendor.payout.form');
+        Route::post('/vendor/payout', [VendorOnboardingController::class,'payoutSave'])->name('vendor.payout.save');
+    });
+});
+
+// admin area
+Route::middleware(['auth:admin'])->prefix('admin')->group(function () {
+    Route::get('/vendors', [AdminVendorController::class,'index'])->name('admin.vendors.index');
+    Route::get('/vendors/{profile}', [AdminVendorController::class,'show'])->name('admin.vendors.show');
+    Route::post('/vendors/{profile}/approve', [AdminVendorController::class,'approve'])->name('admin.vendors.approve');
+    Route::post('/vendors/{profile}/reject', [AdminVendorController::class,'reject'])->name('admin.vendors.reject');
 });

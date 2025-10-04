@@ -3,13 +3,22 @@
 namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
+use App\Models\VendorProfile;
+use Illuminate\Http\Request;
 
 class VendorDashboardController extends Controller
 {
-    public function index()
+    /**
+     * Show the vendor dashboard for the logged-in vendor
+     */
+    public function index(Request $request)
     {
-        $user = auth('vendor')->user(); // the User model (logged in via vendor guard)
-        $profile = $user?->vendorProfile; // optional
-        return view('vendor.dashboard', compact('user','profile'));
+        // get the vendor profile linked to the logged-in user
+        $vendor = VendorProfile::with('user', 'district')
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        return view('vendor.dashboard', compact('vendor'));
     }
 }
+

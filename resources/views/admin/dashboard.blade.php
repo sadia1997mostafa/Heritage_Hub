@@ -1,16 +1,22 @@
-@extends('layouts.app')
-@section('title','Admin Dashboard')
+@extends('layouts.admin')
 
 @section('content')
-  <div class="hh-container pad-section">
-    <h1 class="section-title">Admin Dashboard</h1>
-    <p class="section-text">Welcome, <strong>{{ $admin->name }}</strong> ({{ $admin->email }})</p>
+<div class="p-6 bg-white rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
 
-    <div class="card" style="padding:16px;border:1px solid #ddd;border-radius:12px;margin-top:12px">
-      <ul>
-        <li><a href="{{ route('home') }}">Go to site home</a></li>
-        {{-- Add your admin links here --}}
-      </ul>
-    </div>
-  </div>
+    <p class="mb-6">Welcome, <strong>{{ auth()->user()->name }}</strong> ({{ auth()->user()->email }})</p>
+
+    <ul class="space-y-2">
+        <li>
+            <a href="{{ route('admin.vendors.index') }}" class="btn btn-primary">
+                Manage Vendors
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('home') }}" class="btn btn-secondary">
+                Go to Site Home
+            </a>
+        </li>
+    </ul>
+</div>
 @endsection
