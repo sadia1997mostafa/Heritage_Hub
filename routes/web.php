@@ -12,6 +12,14 @@ use App\Http\Controllers\AdminVendorController;
 use App\Http\Controllers\Vendor\VendorDashboardController;
 use App\Http\Controllers\VendorOnboardingController;
 use App\Http\Controllers\Admin\AdminPayoutController;
+
+
+
+use App\Http\Controllers\Shop\CategoryController;
+use App\Http\Controllers\Shop\ProductPublicController;
+use App\Http\Controllers\Shop\StorefrontController;
+
+
 /*
 |--------------------------------------------------------------------------
 | Public / Site Routes
@@ -104,3 +112,14 @@ Route::post('/payouts/{payout}/nope', [AdminPayoutController::class,'reject'])->
     Route::post('/products/{product}/reject', [\App\Http\Controllers\Admin\ProductApprovalController::class,'reject'])->name('admin.products.reject');
     });
 });
+
+
+
+// Public shop browsing
+Route::get('/c/{slug}', [CategoryController::class, 'show'])->name('shop.category.show');
+Route::get('/p/{slug}', [ProductPublicController::class, 'show'])->name('shop.product.show');
+Route::get('/store/{slug}', [StorefrontController::class, 'show'])->name('shop.store.show');
+
+
+
+Route::get('/ping', fn () => 'pong');

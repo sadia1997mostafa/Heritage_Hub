@@ -25,4 +25,7 @@ class VendorProfile extends Model
     {
         return $this->banner_path ? asset('storage/'.$this->banner_path) : asset('images/default-banner.png');
     }
+    public function products() {
+    return $this->hasMany(\App\Models\Product::class, 'vendor_id');
+}
 }

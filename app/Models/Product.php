@@ -7,18 +7,73 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $fillable = [
-        'vendor_id','category_id','title','slug','description','stock','status','price'
+        'vendor_id',
+        'category_id',
+        'title',
+        'slug',
+        'description',
+        'price',
+        'stock',
+        'status',   // draft | submitted | approved
     ];
 
-    public function vendor() {
-        return $this->belongsTo(VendorProfile::class,'vendor_id');
+    protected $casts = [
+        'price' => 'decimal:2',
+    ];
+
+    /* ------------------------
+     | Relationships
+     |-------------------------*/
+    public function vendor()
+    {
+        return $this->belongsTo(VendorProfile::class, 'vendor_id');
     }
 
-    public function category() {
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 
-    public function media() {
+    public function media()
+    {
         return $this->hasMany(ProductMedia::class);
+    }
+
+    /* ------------------------
+     | Query Scopes
+     |-------------------------*/
+    /**
+     * Only approved products.
+     */
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    /**
+     * Only products with stock > 0.
+     */
+    public function scopeInStock($query)
+    {
+        return $query->where('stock', '>', 0);
+    }
+
+    /* ------------------------
+     | Helpers / Accessors
+     |-------------------------*/
+    /**
+     * First image URL or a fallback.
+     *
+     * Usage: $product->first_image_url
+     */
+    public function getFirstImageUrlAttribute(): string
+    {
+        $media = $this->relationLoaded('media')
+            ? $this->media->first()
+            : $this->media()->first();
+
+        return $media
+            ? asset('storage/' . $media->path)
+            : asset('images/default-product.png'); // put a default image here
     }
 }
