@@ -50,6 +50,8 @@
     </div>
   </section>
 
+  {{-- Featured content moved to Shop page (Shop menu) --}}
+
   {{-- APP (just above footer) --}}
   <section id="app" class="pad-section hh-container app-section">
     <div class="app-card">

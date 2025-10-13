@@ -8,6 +8,8 @@
   {{-- Vite --}}
   @vite(['resources/css/app.css','resources/js/app.js'])
 
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+
   {{-- Fonts: Latin + Bengali --}}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,11 +82,29 @@
         </button>
       </form>
 
+      {{-- Quick jump to specific category/product/store/district for development/testing --}}
+      <form action="{{ route('goto') }}" method="GET" class="hh-quickjump" style="display:inline-block;margin-left:12px">
+        <select name="type" aria-label="Type">
+          <option value="category">Category</option>
+          <option value="product">Product</option>
+          <option value="store">Store</option>
+          <option value="district">District</option>
+        </select>
+        <input name="slug" placeholder="slug" style="width:160px" />
+        <button type="submit">Go</button>
+      </form>
+
       <div class="hh-actions">
         <a class="hh-cart" href="{{ route('cart') }}" aria-label="Cart">
           <svg viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12zM6 6l-2-2H2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/></svg>
           <span class="hh-badge" id="hh-cart-count">0</span>
         </a>
+        <select id="hh-theme-select" aria-label="Theme" style="margin-right:8px">
+          <option value="default">Heritage</option>
+          <option value="saffron">Saffron</option>
+          <option value="teal">Teal</option>
+          <option value="forest">Forest</option>
+        </select>
         <button id="hh-burger" class="hh-burger" aria-label="Menu">
           <span></span><span></span><span></span>
         </button>
@@ -102,34 +122,34 @@
           <li><a href="{{ route('home') }}" class="with-orn">Home</a></li>
           <li><a href="{{ $a('about') }}" class="with-orn">About</a></li>
           <li><a href="{{ $a('explore') }}" class="with-orn">Explore</a></li>
-          <li class="has-mega">
+          <div class="mega-row">
   <a href="{{ route('shop') }}" class="with-orn" aria-haspopup="true" aria-expanded="false">Shop</a>
   <div class="mega" role="menu" aria-label="Shop categories">
-    <div class="mega-row">
-      <div class="mega-col">
-        <h5>Textiles</h5>
-        <a href="{{ route('shop') }}?cat=Jamdani">Jamdani</a>
+            <a href="{{ route('shop.category.show', 'jamdani') }}">Jamdani</a>
+            <a href="{{ route('shop.category.show', 'muslin') }}">Muslin</a>
+            <a href="{{ route('shop.category.show', 'nakshi-kantha') }}">Nakshi Kantha</a>
+            <a href="{{ route('shop.category.show', 'tangail-saree') }}">Tangail Saree</a>
         <a href="{{ route('shop') }}?cat=Muslin">Muslin</a>
         <a href="{{ route('shop') }}?cat=Nakshi Kantha">Nakshi Kantha</a>
         <a href="{{ route('shop') }}?cat=Tangail Saree">Tangail Saree</a>
-      </div>
-      <div class="mega-col">
-        <h5>Craft & Wood</h5>
-        <a href="{{ route('shop') }}?cat=Woodcarving">Woodcarving</a>
+            <a href="{{ route('shop.category.show', 'woodcarving') }}">Woodcarving</a>
+            <a href="{{ route('shop.category.show', 'shital-pati') }}">Shital Pati</a>
+            <a href="{{ route('shop.category.show', 'rickshaw-art') }}">Rickshaw Art</a>
+            <a href="{{ route('shop.category.show', 'bamboo-cane') }}">Bamboo & Cane</a>
         <a href="{{ route('shop') }}?cat=Shital Pati">Shital Pati</a>
         <a href="{{ route('shop') }}?cat=Rickshaw Art">Rickshaw Art</a>
         <a href="{{ route('shop') }}?cat=Bamboo & Cane">Bamboo & Cane</a>
-      </div>
-      <div class="mega-col">
-        <h5>Metal & Clay</h5>
-        <a href="{{ route('shop') }}?cat=Dokra Metal">Dokra Metal</a>
+            <a href="{{ route('shop.category.show', 'dokra-metal') }}">Dokra Metal</a>
+            <a href="{{ route('shop.category.show', 'brass-copper') }}">Brass & Copper</a>
+            <a href="{{ route('shop.category.show', 'terracotta') }}">Terracotta</a>
+            <a href="{{ route('shop.category.show', 'pottery') }}">Pottery</a>
         <a href="{{ route('shop') }}?cat=Brass & Copper">Brass & Copper</a>
         <a href="{{ route('shop') }}?cat=Terracotta">Terracotta</a>
         <a href="{{ route('shop') }}?cat=Pottery">Pottery</a>
-      </div>
-      <div class="mega-col">
-        <h5>Folk & Gifts</h5>
-        <a href="{{ route('shop') }}?cat=Folk Masks">Folk Masks</a>
+            <a href="{{ route('shop.category.show', 'folk-masks') }}">Folk Masks</a>
+            <a href="{{ route('shop.category.show', 'nakshi-dolls') }}">Nakshi Dolls</a>
+            <a href="{{ route('shop.category.show', 'scroll-art') }}">Scroll Art</a>
+            <a href="{{ route('shop.category.show', 'festival-decor') }}">Festival Decor</a>
         <a href="{{ route('shop') }}?cat=Nakshi Dolls">Nakshi Dolls</a>
         <a href="{{ route('shop') }}?cat=Scroll Art">Scroll Art</a>
         <a href="{{ route('shop') }}?cat=Festival Decor">Festival Decor</a>

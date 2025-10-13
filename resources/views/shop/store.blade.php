@@ -7,7 +7,7 @@
 <div class="container">
   <div class="store-hero card">
     <div class="store-left">
-      <img class="logo" src="{{ $store->shop_logo_path ? asset('storage/'.$store->shop_logo_path) : asset('images/default-shop.png') }}" alt="{{ $store->shop_name }}">
+  <img class="logo" src="{{ $store->shop_logo_path ? asset('storage/'.$store->shop_logo_path) : asset('images/default-shop.png') }}" alt="{{ $store->shop_name }}" loading="lazy" decoding="async" width="120" height="120">
       <div>
         <h1 class="store-title">{{ $store->shop_name }}</h1>
         <div class="muted">
@@ -17,7 +17,7 @@
       </div>
     </div>
     @if($store->banner_path)
-      <img class="banner" src="{{ asset('storage/'.$store->banner_path) }}" alt="Banner">
+  <img class="banner" src="{{ asset('storage/'.$store->banner_path) }}" alt="Banner" loading="lazy" decoding="async" >
     @endif
   </div>
 

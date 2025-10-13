@@ -35,6 +35,9 @@
       <form id="login-form" class="form tabpane active" method="POST" action="{{ route('auth.login') }}">
         @csrf
 
+        {{-- preserve redirect when opened from other pages (e.g., /cart -> /login?redirect=/checkout) --}}
+        <input type="hidden" name="redirect" value="{{ $redirect ?? request('redirect') ?? '' }}" />
+
         <label>Email</label>
         <input type="email" name="email" value="{{ old('email') }}" required autocomplete="email" />
 
@@ -386,5 +389,84 @@
 
   // for console testing
   window.__openAuth = openModal;
+})();
+
+// AJAX login handler: intercept login form submits and send XHR/Fetch expecting JSON
+(function(){
+  const loginForm = document.getElementById('login-form');
+  if (!loginForm) return;
+
+  loginForm.addEventListener('submit', async function(e){
+    // always try AJAX; fallback to normal submit if fetch not supported
+    if (!window.fetch) return;
+    e.preventDefault();
+
+    const form = e.target;
+    const url = form.action;
+    const formData = new FormData(form);
+
+    // Pull CSRF token from meta tag (layout includes this)
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    const csrf = meta ? meta.getAttribute('content') : null;
+
+    try {
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': csrf || ''
+        },
+        body: formData,
+        credentials: 'same-origin'
+      });
+
+      let json = null;
+      try { json = await resp.json(); } catch(_) { json = null; }
+
+      if (resp.ok && json && json.ok) {
+        // success: show brief toast and redirect
+        const t = document.createElement('div');
+        t.className = 'toast ok';
+        t.textContent = 'Login successful — redirecting…';
+        Object.assign(t.style,{position:'fixed',top:'20px',right:'20px',padding:'12px 14px',borderRadius:'10px',color:'#fff',zIndex:10000,background:'#0c7a43'});
+        document.body.appendChild(t);
+        setTimeout(()=>t.remove(), 1800);
+
+        const redirect = (json.redirect && json.redirect !== '') ? json.redirect : window.location.href;
+        setTimeout(()=> window.location.href = redirect, 600);
+        return;
+      }
+
+      // handle validation / auth errors
+      const messages = [];
+      if (json) {
+        if (json.errors) {
+          for (const k in json.errors) {
+            if (Array.isArray(json.errors[k])) messages.push(...json.errors[k]);
+            else messages.push(String(json.errors[k]));
+          }
+        } else if (json.message) {
+          messages.push(String(json.message));
+        }
+      }
+      if (messages.length === 0) messages.push('Login failed — please check your credentials.');
+
+      const t = document.createElement('div');
+      t.className = 'toast err';
+      t.textContent = 'Login failed:\n• ' + messages.join('\n• ');
+      Object.assign(t.style,{position:'fixed',top:'20px',right:'20px',padding:'12px 14px',borderRadius:'10px',color:'#fff',zIndex:10000,whiteSpace:'pre-wrap',maxWidth:'420px',background:'#b42318'});
+      document.body.appendChild(t);
+      setTimeout(()=>t.remove(), 4500);
+
+    } catch (err) {
+      const t = document.createElement('div');
+      t.className = 'toast err';
+      t.textContent = 'Network error while logging in';
+      Object.assign(t.style,{position:'fixed',top:'20px',right:'20px',padding:'12px 14px',borderRadius:'10px',color:'#fff',zIndex:10000,background:'#b42318'});
+      document.body.appendChild(t);
+      setTimeout(()=>t.remove(), 2500);
+    }
+  });
 })();
 </script>

@@ -1,0 +1,41 @@
+/* Theme palettes for Heritage Hub — multiple lively options */
+:root{
+  --bg: #F5EFE6;
+  --ink: #2A1C14;
+  --muted: #7B6A5B;
+  --brand: #6B4E3D;
+  --accent: #D9A441;
+}
+
+/* Saffron theme */
+.theme-saffron{
+  --bg: #FFF5E6;
+  --ink: #3b2f1f;
+  --muted: #8f6f4d;
+  --brand: #b55a10;
+  --accent: #ffb74d;
+}
+
+/* Teal theme (cool contrast) */
+.theme-teal{
+  --bg: #f2fbfb;
+  --ink: #083642;
+  --muted: #3b6b6b;
+  --brand: #0e7c86;
+  --accent: #2ec4b6;
+}
+
+/* Forest theme (deep green) */
+.theme-forest{
+  --bg: #f4fbf6;
+  --ink: #143927;
+  --muted: #5b7a6a;
+  --brand: #2a6f4f;
+  --accent: #86c88b;
+}
+
+/* Utility: make components use variables */
+body{background:var(--bg);color:var(--ink)}
+.hh-topbar{background:linear-gradient(180deg,var(--brand), color-mix(in srgb, var(--brand) 80%, black 20%));}
+.btn-primary{background:var(--accent)}
+.card, .vendor-block, .summary{border-color: color-mix(in srgb, var(--accent) 25%, #000 5%)}

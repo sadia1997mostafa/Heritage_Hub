@@ -1,6 +1,7 @@
  <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 use App\Http\Controllers\HeritageController;
 use App\Http\Controllers\DistrictPageController;
@@ -27,7 +28,22 @@ use App\Http\Controllers\Shop\StorefrontController;
 */
 Route::view('/', 'home')->name('home');
 Route::view('/shop',   'pages.shop')->name('shop');
-Route::view('/cart',   'pages.cart')->name('cart');
+// Cart & Checkout
+Route::get('/cart', [\App\Http\Controllers\CartController::class,'index'])->name('cart');
+Route::post('/cart/add', [\App\Http\Controllers\CartController::class,'add'])->name('cart.add');
+Route::post('/cart/update', [\App\Http\Controllers\CartController::class,'update'])->name('cart.update');
+Route::post('/cart/remove-vendor/{vendor}', [\App\Http\Controllers\CartController::class,'removeVendor'])->name('cart.remove.vendor');
+Route::middleware('auth')->group(function() {
+    Route::get('/checkout', [\App\Http\Controllers\CartController::class,'checkoutForm'])->name('checkout.form');
+    Route::post('/checkout', [\App\Http\Controllers\CartController::class,'checkoutSubmit'])->name('checkout.submit');
+});
+Route::middleware('auth')->group(function() {
+    Route::get('/order/{order}/confirm', [\App\Http\Controllers\CartController::class,'confirm'])->name('cart.confirm');
+
+    // Customer order pages
+    Route::get('/orders', [\App\Http\Controllers\UserOrderController::class,'index'])->name('orders.index');
+    Route::get('/orders/{order}', [\App\Http\Controllers\UserOrderController::class,'show'])->name('orders.show');
+});
 Route::view('/skills', 'pages.skills')->name('skills');
 
 Route::get('/heritage/{division}/{district?}', [HeritageController::class, 'page'])
@@ -36,9 +52,10 @@ Route::get('/heritage/{division}/{district?}', [HeritageController::class, 'page
 Route::get('/district/{slug}', [DistrictPageController::class, 'show'])
     ->name('district.show');
 
-// Minimal login alias so guard redirects have a target
-Route::get('/login', fn () => redirect()->route('home')->with('please_login', true))
-    ->name('login');
+// Login page (GET) — renders a real login form. Accepts optional ?redirect= URL to return after login.
+Route::get('/login', function (Illuminate\Http\Request $request) {
+    return view('auth.login', ['redirect' => $request->query('redirect')]);
+})->name('login');
 
 /*
 |--------------------------------------------------------------------------
@@ -87,6 +104,13 @@ Route::middleware(['auth:vendor', 'vendor.approved'])->group(function () {
     Route::get('/products/create', [\App\Http\Controllers\Vendor\ProductController::class,'create'])->name('vendor.products.create');
     Route::post('/products', [\App\Http\Controllers\Vendor\ProductController::class,'store'])->name('vendor.products.store');
     Route::post('/products/{product}/submit', [\App\Http\Controllers\Vendor\ProductController::class,'submit'])->name('vendor.products.submit');
+    // Vendor orders
+    Route::get('/vendor/orders', [\App\Http\Controllers\VendorOrderController::class,'index'])->name('vendor.orders.index');
+    Route::get('/vendor/orders/{shipment}', [\App\Http\Controllers\VendorOrderController::class,'show'])->name('vendor.orders.show');
+    Route::post('/vendor/orders/{shipment}', [\App\Http\Controllers\VendorOrderController::class,'updateStatus'])->name('vendor.orders.update');
+    Route::get('/vendor/orders/{shipment}/packing-slip', [\App\Http\Controllers\VendorOrderController::class,'packingSlip'])->name('vendor.orders.packing-slip');
+    Route::get('/vendor/ledger', [\App\Http\Controllers\VendorOrderController::class,'ledger'])->name('vendor.ledger');
+    Route::post('/vendor/orders/{shipment}/quick-ship', [\App\Http\Controllers\VendorOrderController::class,'quickShip'])->name('vendor.orders.quickship');
 });
 
 /*
@@ -123,3 +147,30 @@ Route::get('/store/{slug}', [StorefrontController::class, 'show'])->name('shop.s
 
 
 Route::get('/ping', fn () => 'pong');
+
+/*
+|--------------------------------------------------------------------------
+| Quick jump helper (site-facing)
+| A tiny convenience to jump to known slugs from the UI while browsing.
+| Example: /goto?type=product&slug=my-product
+|--------------------------------------------------------------------------
+*/
+Route::get('/goto', function (Request $request) {
+    $type = $request->query('type');
+    $slug = $request->query('slug');
+    if (!$slug) {
+        abort(404);
+    }
+    switch ($type) {
+        case 'category':
+            return redirect()->route('shop.category.show', $slug);
+        case 'product':
+            return redirect()->route('shop.product.show', $slug);
+        case 'store':
+            return redirect()->route('shop.store.show', $slug);
+        case 'district':
+            return redirect()->route('district.show', $slug);
+        default:
+            return redirect()->route('shop');
+    }
+})->name('goto');

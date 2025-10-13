@@ -18,7 +18,14 @@ class VendorDashboardController extends Controller
             ->where('user_id', $request->user()->id)
             ->firstOrFail();
 
-        return view('vendor.dashboard', compact('vendor'));
+        // Fetch recent shipments/orders for this vendor (show last 6)
+        $shipments = \App\Models\Shipment::with('order')
+            ->where('vendor_id', $vendor->id)
+            ->latest()
+            ->take(6)
+            ->get();
+
+        return view('vendor.dashboard', compact('vendor','shipments'));
     }
 }
 

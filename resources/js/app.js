@@ -1,4 +1,7 @@
 import '../css/app.css';
+import '../css/themes.css';
+import '../css/ux-3d.css';
+import '../css/ui-3d-advanced.css';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -81,6 +84,126 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   onScroll();
   window.addEventListener('scroll', onScroll);
+
+  // Theme selector: apply persisted theme or default
+  const applyTheme = (theme) => {
+    document.body.classList.remove('theme-saffron','theme-teal','theme-forest');
+    if (theme && theme !== 'default') document.body.classList.add('theme-'+theme);
+  };
+  const saved = localStorage.getItem('hh:theme') || 'default';
+  applyTheme(saved);
+  const themeSelect = document.getElementById('hh-theme-select');
+  if (themeSelect) {
+    themeSelect.value = saved;
+    themeSelect.addEventListener('change', (e)=>{
+      const t = e.target.value;
+      localStorage.setItem('hh:theme', t);
+      applyTheme(t);
+    });
+  }
+
+  // Lightweight 3D tilt for cards (desktop only)
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const supportsPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  // Respect user's reduced motion preference
+  if (prefersReduced) return;
+  if (supportsPointer) {
+    const tiltCards = [...document.querySelectorAll('.tilt-card')];
+    tiltCards.forEach(card => {
+      const inner = card.querySelector('.tilt-inner') || card;
+      let rect = null;
+      card.addEventListener('mousemove', (e) => {
+        rect = rect || card.getBoundingClientRect();
+        const cx = rect.left + rect.width/2;
+        const cy = rect.top + rect.height/2;
+        const dx = (e.clientX - cx) / rect.width;
+        const dy = (e.clientY - cy) / rect.height;
+        // Reduced tilt strength for performance and subtlety
+        const strength = 5; // degrees max
+        const rx = (-dy * strength).toFixed(2);
+        const ry = (dx * strength).toFixed(2);
+        inner.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0)`;
+        card.classList.add('tilt-active');
+      });
+      card.addEventListener('mouseleave', () => {
+        inner.style.transform = '';
+        card.classList.remove('tilt-active');
+        rect = null;
+      });
+    });
+
+    // Parallax hero effect: small translate for background layer
+    const heroes = [...document.querySelectorAll('.parallax-hero')];
+    heroes.forEach(hero => {
+      const layer = hero.querySelector('.parallax-layer');
+      if (!layer) return;
+      hero.addEventListener('mousemove', (e) => {
+        const r = hero.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        // clamp values to avoid large transforms
+        const tx = Math.max(-1, Math.min(1, px)) * 6;
+        const ty = Math.max(-1, Math.min(1, py)) * 6;
+        layer.style.transform = `translate3d(${tx}px, ${ty}px, -40px) scale(1.05)`;
+      });
+      hero.addEventListener('mouseleave', ()=>{ layer.style.transform = ''; });
+    });
+  }
+  // Soft depth lighting: subtle highlight that follows pointer for large cards
+  const depthTargets = [...document.querySelectorAll('.rim-light')];
+  if (!prefersReduced && supportsPointer && depthTargets.length) {
+    depthTargets.forEach(target=>{
+      const onMove = (e) => {
+        const r = target.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        target.style.setProperty('--light-x', (px*40)+'px');
+        target.style.setProperty('--light-y', (py*40)+'px');
+        target.style.filter = `brightness(${1 + Math.abs(px)*0.06})`;
+      };
+      target.addEventListener('mousemove', onMove);
+      target.addEventListener('mouseleave', ()=>{ target.style.filter=''; });
+    });
+  }
+
+  // Shop page 3D rotator: auto-rotate, manual prev/next, respects reduced motion
+  const rotators = [...document.querySelectorAll('.rotator')];
+  rotators.forEach(rot => {
+    const slides = [...rot.querySelectorAll('.rotor-slide')];
+    if (!slides.length) return;
+    let idx = 0;
+
+    const refreshClasses = (centerIndex) => {
+      slides.forEach((s, i)=>{
+        s.classList.remove('is-center','side-left','side-right');
+        if (i === centerIndex) s.classList.add('is-center');
+        else if (i < centerIndex) s.classList.add('side-left');
+        else s.classList.add('side-right');
+      });
+      // center the rotator by translating so center slide is visible
+      const centerSlide = slides[centerIndex];
+      const offset = centerSlide ? centerSlide.offsetLeft - (rot.parentElement.offsetWidth/2 - centerSlide.offsetWidth/2) : 0;
+      rot.style.transform = `translateZ(-120px) translateX(${ -offset }px)`;
+    };
+
+    refreshClasses(idx);
+
+    // autoplay if supported and not reduced motion
+    let timer = null;
+    if (!prefersReduced) timer = setInterval(()=>{ idx = (idx+1) % slides.length; refreshClasses(idx); }, 3200);
+
+    // controls
+    const parent = rot.closest('.shop-rotator');
+    if (parent) {
+      const prev = parent.querySelector('.rot-prev');
+      const next = parent.querySelector('.rot-next');
+      if (prev) prev.addEventListener('click', (e)=>{ e.preventDefault(); idx = (idx - 1 + slides.length) % slides.length; refreshClasses(idx); if (timer){clearInterval(timer); timer=null;} });
+      if (next) next.addEventListener('click', (e)=>{ e.preventDefault(); idx = (idx + 1) % slides.length; refreshClasses(idx); if (timer){clearInterval(timer); timer=null;} });
+      // pause on hover
+      parent.addEventListener('mouseenter', ()=>{ if (timer){ clearInterval(timer); timer=null;} });
+      parent.addEventListener('mouseleave', ()=>{ if (!prefersReduced && !timer) timer = setInterval(()=>{ idx = (idx+1) % slides.length; refreshClasses(idx); }, 3200); });
+    }
+  });
     // ===== Craft Origin Map Interactions =====
  // ===== Craft Origin Map Interactions =====
 const tip = document.getElementById('map-tip');

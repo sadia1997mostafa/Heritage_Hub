@@ -144,14 +144,17 @@ class MultiAuthController extends Controller
         $remember = (bool) ($data['remember'] ?? false);
 
         // ADMIN
-        if ($data['login_as'] === 'admin') {
+    $redirect = $req->input('redirect') ?: null;
+
+    if ($data['login_as'] === 'admin') {
             if (!Admin::where('email', $email)->exists()) {
                 return back()->withErrors(['login' => 'Account not registered as Admin.']);
             }
 
             if (Auth::guard('admin')->attempt($cred, $remember)) {
                 $req->session()->regenerate();
-                return redirect()->intended(route('admin.dashboard'))
+                if ($req->wantsJson()) return response()->json(['ok'=>true,'redirect'=>$redirect ?: route('admin.dashboard')]);
+                return redirect()->to($redirect ?: route('admin.dashboard'))
                     ->with(['auth_ok'=>true,'auth_role'=>'admin','auth_msg'=>'Successfully logged in as Admin.']);
             }
 
@@ -172,7 +175,8 @@ class MultiAuthController extends Controller
 
             if (Auth::guard('vendor')->attempt($cred, $remember)) {
                 $req->session()->regenerate();
-                return redirect()->intended(route('vendor.dashboard'))
+                if ($req->wantsJson()) return response()->json(['ok'=>true,'redirect'=>$redirect ?: route('vendor.dashboard')]);
+                return redirect()->to($redirect ?: route('vendor.dashboard'))
                     ->with(['auth_ok'=>true,'auth_role'=>'vendor','auth_msg'=>'Successfully logged in as Vendor.']);
             }
 
@@ -186,11 +190,13 @@ class MultiAuthController extends Controller
 
         if (Auth::guard('web')->attempt($cred, $remember)) {
             $req->session()->regenerate();
-            return redirect()->intended(route('home'))
+            if ($req->wantsJson()) return response()->json(['ok'=>true,'redirect'=>$redirect ?: route('home')]);
+            return redirect()->to($redirect ?: route('home'))
                 ->with(['auth_ok'=>true,'auth_role'=>'user','auth_msg'=>'Successfully logged in as User.']);
         }
 
-        return back()->withErrors(['login' => 'Invalid credentials.']);
+    if ($req->wantsJson()) return response()->json(['ok'=>false,'error'=>'Invalid credentials.'], 422);
+    return back()->withErrors(['login' => 'Invalid credentials.']);
     }
 
     /**

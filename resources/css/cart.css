@@ -1,0 +1,32 @@
+/* Cart & Checkout styles — Heritage aesthetic */
+:root{--hh-bg:#F5EFE6;--hh-ink:#2A1C14;--hh-accent:#D9A441;--hh-muted:#7B6A5B}
+.pad-section{padding:28px 16px}
+.hh-container{max-width:1120px;margin:0 auto}
+h2{color:var(--hh-ink);margin-bottom:12px}
+.vendor-block{background:linear-gradient(180deg,#fff,#fff8ee);border:1px solid #e9d4b4;padding:14px;border-radius:12px;margin-bottom:16px}
+.vendor-head{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.vendor-head .logo{width:56px;height:56px;object-fit:cover;border-radius:10px}
+.cart-table{width:100%;border-collapse:collapse}
+.cart-table th,.cart-table td{padding:12px;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:middle}
+.cart-item-media{display:flex;gap:12px;align-items:center}
+.cart-item-title{font-weight:700}
+.prod-thumb{width:78px;height:78px;object-fit:cover;border-radius:8px}
+.qty-input{width:72px;padding:8px;border-radius:8px;border:1px solid #e7dccf}
+.btn-link{background:none;border:0;color:var(--hh-ink);cursor:pointer}
+.btn-link.small{font-size:.9rem;color:var(--hh-muted)}
+.summary{background:#fff8ee;border:1px solid #e9d4b4;padding:16px;border-radius:12px}
+.checkout-form label{display:block;margin-bottom:10px}
+.checkout-form input,.checkout-form textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #dcc7a0}
+.btn-primary{background:var(--hh-accent);color:#fff;padding:12px 18px;border-radius:12px;display:inline-block;text-decoration:none;font-weight:700}
+.btn-primary.btn-block{display:block;width:100%;text-align:center}
+.muted{color:var(--hh-muted)}
+
+/* Layout: cart grid + sticky summary */
+.cart-grid{display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start}
+.cart-list{min-width:0}
+.summary-sticky{position:sticky;top:84px}
+
+@media(max-width:900px){
+	.cart-grid{grid-template-columns:1fr}
+	.summary-sticky{position:static}
+}

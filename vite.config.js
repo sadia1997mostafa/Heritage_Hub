@@ -6,10 +6,14 @@ export default defineConfig({
   plugins: [
     laravel({
       input: [
-        'resources/css/app.css',
-        'resources/css/vendor.css', // compile vendor styles
+  'resources/css/app.css',
+  'resources/css/themes.css',
+  'resources/css/shop.css',
+  'resources/css/ux-3d.css',
+  'resources/css/vendor.css', // compile vendor styles
+  'resources/css/cart.css',
+        'resources/css/admin.css',  // compile admin styles
         'resources/js/app.js',
-        'resources/js/admin.css',  // compile admin styles
       ],
       refresh: true,
     }),

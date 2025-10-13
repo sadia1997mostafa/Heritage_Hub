@@ -1,47 +1,37 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@extends('layouts.app')
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+@section('title','Login')
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+@section('content')
+  {{-- Render the auth modal partial centered like a popup. The modal partial contains both login & register panes. --}}
+  @php
+    // allow a redirect query to be passed through to the modal form
+    $redirectTo = request('redirect') ?? ($redirect ?? '');
+  @endphp
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+  <div class="hh-container pad-section" aria-hidden="true">
+    {{-- keep an offscreen heading for accessibility; actual modal is shown below --}}
+    <h2 class="visually-hidden">Login</h2>
+  </div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+  {{-- Include the modal partial. It uses $redirect variable if present to prefill hidden input. --}}
+  @include('partials.auth-modal-fixed', ['redirect' => $redirectTo])
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+  {{-- Auto-open modal on page load when this route is visited directly --}}
+  <script>
+    (function(){
+      // open login tab explicitly
+      window.addEventListener('DOMContentLoaded', function(){
+        if (typeof window.__openAuth === 'function') {
+          try { window.__openAuth('login'); } catch(e){}
+        }
+      });
+    })();
+  </script>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+  <style>
+    /* small helper to visually hide the page heading but keep accessible */
+    .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+  </style>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+@endsection

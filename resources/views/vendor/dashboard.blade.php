@@ -53,6 +53,7 @@
   <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap">
     <a href="{{ route('vendor.store.setup') }}" class="btn ghost">Edit Store Profile</a>
     <a href="{{ route('vendor.payout.form') }}" class="btn ghost">Setup / Update Payout</a>
+      <a href="{{ route('vendor.ledger') }}" class="btn ghost">Ledger</a>
   </div>
 </div>
 
@@ -118,6 +119,25 @@
       </table>
     </div>
   @endif
+
+  {{-- Recent orders / shipments (M5) --}}
+  <div style="margin-top:18px">
+    <h3 style="margin:0 0 8px">Recent Orders</h3>
+    @if(!empty($shipments) && $shipments->count())
+      <div class="ship-list">
+        @foreach($shipments as $s)
+          <div class="ship-row">
+            <div>Shipment #{{ $s->id }} — Order #{{ $s->order_id }}</div>
+            <div class="muted">Placed {{ $s->created_at->diffForHumans() }}</div>
+            <div>Status: <strong>{{ $s->status }}</strong></div>
+            <div><a href="{{ route('vendor.orders.show', $s->id) }}">View</a></div>
+          </div>
+        @endforeach
+      </div>
+    @else
+      <p class="muted">You have not received any orders yet.</p>
+    @endif
+  </div>
 </div>
 
 {{-- If vendor is not approved, small note --}}

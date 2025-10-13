@@ -1,3 +1,15 @@
+/* Vendor console microstyles */
+:root{--vendor-bg:#fff;--vendor-ink:#33221a;--vendor-muted:#846855;--vendor-accent:#b06b3a}
+.vendor-orders{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.ship-card{display:block;padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbf6f0);border:1px solid rgba(140,100,80,0.06);text-decoration:none;color:inherit}
+.ship-head{display:flex;justify-content:space-between;align-items:center}
+.ship-body{margin-top:8px;color:var(--vendor-ink)}
+.ship-foot{margin-top:10px;color:var(--vendor-muted)}
+.ship-detail{display:grid;grid-template-columns:1fr 340px;gap:18px}
+.ship-detail .left{background:#fff;padding:12px;border-radius:12px}
+.ship-detail .right{background:#fff8ee;padding:12px;border-radius:12px}
+
+@media(max-width:900px){.vendor-orders{grid-template-columns:1fr}.ship-detail{grid-template-columns:1fr}}
 /* ================================
    HeritageHub Vendor UI (elegant/animated)
    File: public/css/vendor.css

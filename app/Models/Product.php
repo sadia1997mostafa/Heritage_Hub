@@ -76,4 +76,13 @@ class Product extends Model
             ? asset('storage/' . $media->path)
             : asset('images/default-product.png'); // put a default image here
     }
+
+    public function getFirstImagePathAttribute(): ?string
+    {
+        $media = $this->relationLoaded('media')
+            ? $this->media->first()
+            : $this->media()->first();
+
+        return $media ? $media->path : null;
+    }
 }
