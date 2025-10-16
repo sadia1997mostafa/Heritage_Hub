@@ -1,6 +1,22 @@
  <?php
 
 use Illuminate\Support\Facades\Route;
+// Payment (mock) routes for M6 scaffolding
+Route::get('/payments/mock/{id}', [App\Http\Controllers\PaymentController::class, 'mockRedirect'])->name('payment.mock.redirect');
+Route::get('/payments/mock/{id}/return', [App\Http\Controllers\PaymentController::class, 'mockReturn'])->name('payment.mock.return');
+Route::post('/payments/webhook', [App\Http\Controllers\PaymentController::class, 'webhook'])->name('payment.webhook');
+Route::post('/payments/create', [App\Http\Controllers\PaymentController::class, 'create'])->name('payment.create');
+
+// SSLCommerz sandbox integration (skeleton)
+Route::get('/payments/sslcommerz/{intent}', [App\Http\Controllers\SslCommerzController::class, 'checkout'])->name('sslcommerz.checkout');
+Route::post('/payments/sslcommerz/ipn', [App\Http\Controllers\SslCommerzController::class, 'ipn'])->name('sslcommerz.ipn');
+// bKash sandbox scaffold
+Route::get('/payments/bkash/{intent}', [App\Http\Controllers\BkashController::class, 'checkout'])->name('bkash.checkout');
+Route::post('/payments/bkash/ipn', [App\Http\Controllers\BkashController::class, 'ipn'])->name('bkash.ipn');
+Route::post('/payments/bkash/create', [App\Http\Controllers\BkashController::class, 'create'])->name('bkash.create');
+Route::post('/payments/bkash/execute', [App\Http\Controllers\BkashController::class, 'execute'])->name('bkash.execute');
+Route::get('/payments/bkash/{intent}/approve', [App\Http\Controllers\BkashController::class, 'approve'])->name('bkash.approve');
+
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\HeritageController;
@@ -36,6 +52,17 @@ Route::post('/cart/remove-vendor/{vendor}', [\App\Http\Controllers\CartControlle
 Route::middleware('auth')->group(function() {
     Route::get('/checkout', [\App\Http\Controllers\CartController::class,'checkoutForm'])->name('checkout.form');
     Route::post('/checkout', [\App\Http\Controllers\CartController::class,'checkoutSubmit'])->name('checkout.submit');
+});
+// Returns
+Route::middleware('auth')->group(function() {
+    Route::get('/returns', [App\Http\Controllers\ReturnRequestController::class,'index'])->name('returns.index');
+    Route::get('/returns/create', [App\Http\Controllers\ReturnRequestController::class,'create'])->name('returns.create');
+    Route::post('/returns', [App\Http\Controllers\ReturnRequestController::class,'store'])->name('returns.store');
+});
+
+// Reviews (user)
+Route::middleware('auth')->group(function() {
+    Route::post('/reviews', [App\Http\Controllers\ReviewController::class,'store'])->name('reviews.store');
 });
 Route::middleware('auth')->group(function() {
     Route::get('/order/{order}/confirm', [\App\Http\Controllers\CartController::class,'confirm'])->name('cart.confirm');
@@ -111,6 +138,11 @@ Route::middleware(['auth:vendor', 'vendor.approved'])->group(function () {
     Route::get('/vendor/orders/{shipment}/packing-slip', [\App\Http\Controllers\VendorOrderController::class,'packingSlip'])->name('vendor.orders.packing-slip');
     Route::get('/vendor/ledger', [\App\Http\Controllers\VendorOrderController::class,'ledger'])->name('vendor.ledger');
     Route::post('/vendor/orders/{shipment}/quick-ship', [\App\Http\Controllers\VendorOrderController::class,'quickShip'])->name('vendor.orders.quickship');
+    // Vendor return reviews
+    Route::get('/vendor/returns', [\App\Http\Controllers\Vendor\ReturnRequestController::class,'index'])->name('vendor.returns.index');
+    Route::get('/vendor/returns/{returnRequest}', [\App\Http\Controllers\Vendor\ReturnRequestController::class,'show'])->name('vendor.returns.show');
+    Route::post('/vendor/returns/{returnRequest}/approve', [\App\Http\Controllers\Vendor\ReturnRequestController::class,'approve'])->name('vendor.returns.approve');
+    Route::post('/vendor/returns/{returnRequest}/decline', [\App\Http\Controllers\Vendor\ReturnRequestController::class,'decline'])->name('vendor.returns.decline');
 });
 
 /*
@@ -124,6 +156,11 @@ Route::middleware(['auth:admin'])->group(function () {
 Route::post('/payouts/{payout}/ok',   [AdminPayoutController::class,'approve'])->name('admin.payouts.approve');
 Route::post('/payouts/{payout}/nope', [AdminPayoutController::class,'reject'])->name('admin.payouts.reject');
 
+    // payout runs
+    Route::get('/payout-runs', [\App\Http\Controllers\Admin\AdminPayoutRunController::class,'index'])->name('admin.payouts.runs.index');
+    Route::post('/payout-runs/generate', [\App\Http\Controllers\Admin\AdminPayoutRunController::class,'generate'])->name('admin.payouts.runs.generate');
+    Route::get('/payout-runs/{payout}/download', [\App\Http\Controllers\Admin\AdminPayoutRunController::class,'download'])->name('admin.payouts.runs.download');
+
 
     Route::prefix('admin')->group(function () {
         Route::get('/vendors',                   [AdminVendorController::class,'index'])->name('admin.vendors.index');
@@ -134,6 +171,18 @@ Route::post('/payouts/{payout}/nope', [AdminPayoutController::class,'reject'])->
         Route::get('/products', [\App\Http\Controllers\Admin\ProductApprovalController::class,'index'])->name('admin.products.index');
     Route::post('/products/{product}/approve', [\App\Http\Controllers\Admin\ProductApprovalController::class,'approve'])->name('admin.products.approve');
     Route::post('/products/{product}/reject', [\App\Http\Controllers\Admin\ProductApprovalController::class,'reject'])->name('admin.products.reject');
+        // Returns review
+        Route::get('/returns', [\App\Http\Controllers\Admin\ReturnRequestController::class,'index'])->name('admin.returns.index');
+        Route::get('/returns/{returnRequest}', [\App\Http\Controllers\Admin\ReturnRequestController::class,'show'])->name('admin.returns.show');
+        Route::post('/returns/{returnRequest}/approve', [\App\Http\Controllers\Admin\ReturnRequestController::class,'approve'])->name('admin.returns.approve');
+        Route::post('/returns/{returnRequest}/decline', [\App\Http\Controllers\Admin\ReturnRequestController::class,'decline'])->name('admin.returns.decline');
+        
+    // Reviews moderation
+    Route::get('/reviews', [\App\Http\Controllers\Admin\ReviewController::class,'index'])->name('admin.reviews.index');
+    Route::post('/reviews/{review}/approve', [\App\Http\Controllers\Admin\ReviewController::class,'approve'])->name('admin.reviews.approve');
+    Route::post('/reviews/{review}/hide', [\App\Http\Controllers\Admin\ReviewController::class,'hide'])->name('admin.reviews.hide');
+        // Debug helpers
+        Route::get('/debug/return-request/{returnRequest}', [\App\Http\Controllers\Admin\DebugController::class,'returnRequest'])->name('admin.debug.return-request');
     });
 });
 

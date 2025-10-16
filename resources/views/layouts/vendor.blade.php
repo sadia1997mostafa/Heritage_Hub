@@ -24,6 +24,14 @@
            class="nav-link {{ request()->routeIs('vendor.store.*') ? 'active' : '' }}">
           Store Profile
         </a>
+        <a href="{{ route('vendor.orders.index') }}"
+           class="nav-link {{ request()->routeIs('vendor.orders.*') ? 'active' : '' }}">
+          Orders
+        </a>
+        <a href="{{ route('vendor.returns.index') }}"
+           class="nav-link {{ request()->routeIs('vendor.returns.*') ? 'active' : '' }}">
+          Return Requests
+        </a>
         <a href="{{ route('vendor.products.index') }}"
    class="{{ request()->routeIs('vendor.products.*') ? 'active' : '' }}">
   Products
@@ -42,7 +50,8 @@
 
       {{-- Header bar --}}
       <div class="vendor-header">
-        <div>Welcome, <strong>{{ auth()->user()->name ?? 'Vendor' }}</strong></div>
+        @php $vendorUser = request()->user('vendor') ?? auth()->user(); @endphp
+        <div>Welcome, <strong>{{ $vendorUser->name ?? 'Vendor' }}</strong></div>
         <form method="POST" action="{{ route('auth.logout') }}">
           @csrf
           <button class="btn btn-ghost" type="submit">Logout</button>

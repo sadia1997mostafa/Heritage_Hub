@@ -5,6 +5,7 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use App\Events\ShipmentStatusUpdated;
 use App\Listeners\SendShipmentStatusEmail;
 use App\Listeners\SendShipmentStatusSms;
+use App\Listeners\HandleShipmentDelivered;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -17,6 +18,7 @@ class EventServiceProvider extends ServiceProvider
         ShipmentStatusUpdated::class => [
             SendShipmentStatusEmail::class,
             SendShipmentStatusSms::class,
+            HandleShipmentDelivered::class,
         ],
     ];
 

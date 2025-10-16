@@ -138,6 +138,11 @@
       <p class="muted">You have not received any orders yet.</p>
     @endif
   </div>
+  
+  {{-- Return requests widget --}}
+  <div style="margin-top:18px">
+    @include('vendor.partials.returns-panel')
+  </div>
 </div>
 
 {{-- If vendor is not approved, small note --}}

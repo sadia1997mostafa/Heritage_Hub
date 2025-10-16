@@ -72,6 +72,9 @@
       @endforeach
     </div>
   @endif
+
+  {{-- Reviews --}}
+  @include('product.partials.reviews')
 </div>
 @endsection
 

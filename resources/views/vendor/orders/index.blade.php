@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.vendor')
 @section('title','Vendor Orders')
 @push('styles') @vite(['resources/css/vendor.css']) @endpush
 @section('content')
