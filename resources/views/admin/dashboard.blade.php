@@ -8,6 +8,8 @@
   $pendingVendors    = $pendingVendors    ?? \App\Models\VendorProfile::where('status','pending')->count();
   $pendingPayouts    = $pendingPayouts    ?? \App\Models\VendorPayoutAccount::where('status','pending')->count();
   $adminUser         = auth('admin')->user();
+  // compute total platform revenue from vendor earnings (use stored platform_fee or fallback 10% of gross)
+  $totalPlatformRevenue = \App\Models\VendorEarning::selectRaw('COALESCE(SUM(COALESCE(platform_fee, gross_amount * 0.10)),0) as total')->value('total');
 @endphp
 
 <div class="admin-topcard" style="margin-top:16px">
@@ -37,6 +39,12 @@
     <div style="font-weight:700">Payout Verifications</div>
     <div style="font-size:2rem;font-weight:800;color:#5A3E2B">{{ $pendingPayouts }}</div>
     <div style="color:#7B6A5B">Verify bKash/Nagad/Bank accounts</div>
+  </a>
+
+  <a href="{{ route('admin.reports.platform-revenue') }}" class="card" style="text-decoration:none;color:inherit">
+    <div style="font-weight:700">Platform Revenue</div>
+    <div style="font-size:2rem;font-weight:800;color:#5A3E2B">৳ {{ number_format($totalPlatformRevenue,2) }}</div>
+    <div style="color:#7B6A5B">Total collected platform fees (snapshot from ledger)</div>
   </a>
 </div>
 

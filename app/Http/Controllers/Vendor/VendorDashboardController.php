@@ -25,7 +25,12 @@ class VendorDashboardController extends Controller
             ->take(6)
             ->get();
 
-        return view('vendor.dashboard', compact('vendor','shipments'));
+        // Pending return requests for this vendor
+        $returnRequests = \App\Models\ReturnRequest::where('vendor_id', $vendor->id)
+            ->where(function($q){ $q->whereNull('vendor_status')->orWhere('vendor_status','pending'); })
+            ->latest()->take(6)->get();
+
+        return view('vendor.dashboard', compact('vendor','shipments','returnRequests'));
     }
 }
 

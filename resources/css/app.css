@@ -136,6 +136,32 @@ body.hh-body{
 .hh-lace{ background:linear-gradient(180deg, rgba(217,164,65,.08), transparent) }
 .hh-lace svg{ display:block; width:100%; height:36px }
 
+/* Force small star size inside product cards and reviews to avoid global svg rules overriding them */
+.hh-card .hh-star,
+.reviews-section .hh-star{
+  width:14px !important;
+  height:14px !important;
+  display:inline-block !important;
+  vertical-align:middle !important;
+}
+
+/* Star rating fractional fill */
+.star-rating{ display:inline-flex; align-items:center; gap:4px }
+.star{ position:relative; display:inline-block; width:var(--star-size); height:var(--star-size); line-height:0 }
+.star-svg{ display:block; width:100%; height:100%; color:var(--muted); }
+.star::before{ content:''; position:absolute; left:0; top:0; height:100%; width:var(--fill,0%); pointer-events:none; overflow:hidden; display:block; }
+.star::before svg{ display:none }
+.star::before{ background:linear-gradient(90deg, #F1C644, #F1C644); mix-blend-mode:normal }
+.star .star-svg{ color:var(--muted) }
+.star[style*='--fill:100%'] .star-svg{ color:#F1C644 }
+.star[style*='--fill:0%'] .star-svg{ color:var(--muted) }
+
+/* For partial fill we overlay a clipped gold star using mask-image technique */
+.star{ --fill-clamp: calc(var(--fill) * 1%); }
+.star::after{ content:''; position:absolute; left:0; top:0; height:100%; width:100%; pointer-events:none; background:linear-gradient(90deg,#F1C644,#F1C644); mask: linear-gradient(90deg, #000 var(--fill), transparent var(--fill)); -webkit-mask: linear-gradient(90deg, #000 var(--fill), transparent var(--fill)); opacity:1 }
+.star[style*='--fill:100%']::after{ display:block }
+.star[style*='--fill:0%']::after{ display:none }
+
 /* --- Mega menu --- */
 .has-mega{ position:relative }
 .mega{
@@ -383,6 +409,16 @@ body.hh-body{
 
 /* --- Helpers: grids & chips for home page --- */
 .prod-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px }
+.hh-card{ background:#fff; border:1px solid #efe6d7; border-radius:12px; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between }
+.hh-card .img-wrap{ width:100%; height:220px; display:block; overflow:hidden }
+.hh-card .img-wrap img, .hh-card .img-wrap picture, .hh-card .img-wrap > *{ width:100%; height:100%; object-fit:cover }
+.hh-card-body{ padding-top:8px }
+.hh-card h3{ margin:0 }
+
+/* responsive grid */
+@media (max-width: 1100px){ .prod-grid{ grid-template-columns:repeat(3,1fr) } }
+@media (max-width: 760px){ .prod-grid{ grid-template-columns:repeat(2,1fr) } .hh-card .img-wrap{ height:180px } }
+@media (max-width: 420px){ .prod-grid{ grid-template-columns:repeat(1,1fr) } .hh-card .img-wrap{ height:160px } }
 .vendor-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px }
 .prod-card{ display:block; background:#fff; border:1px solid #efe6d7; border-radius:10px; overflow:hidden }
 .prod-img img{ width:100%; height:180px; object-fit:cover }

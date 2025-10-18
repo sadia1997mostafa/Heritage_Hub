@@ -60,7 +60,49 @@ class VendorOrderController extends Controller
     // Ledger stub
     public function ledger()
     {
-        return view('vendor.ledger');
+        $vendorUser = auth('vendor')->user();
+        $vendor = $vendorUser?->vendorProfile ?? null;
+        if (!$vendor) abort(403);
+
+        $entries = \App\Models\VendorEarning::where('vendor_id', $vendor->id)->latest()->get();
+
+        // group entries by status
+        $receivedEntries = $entries->whereIn('status', ['available','paid']);
+        $pendingEntries = $entries->where('status', 'pending');
+
+        // sums
+        // Total received amount = total the buyers paid (we treat gross_amount as the buyer-paid item total)
+        $received = $receivedEntries->sum('gross_amount');
+        // Platform fee = 10% of the received gross (we prefer using stored platform_fee if available)
+        $receivedPlatformFee = $receivedEntries->sum(function($e){
+            return $e->platform_fee ?? round(($e->gross_amount * 0.10), 2);
+        });
+        // Vendor revenue = received - platform fee (or sum of vendor_share if that already includes shipping adjustments)
+        $vendorRevenue = $received - $receivedPlatformFee;
+
+        $pending = $pendingEntries->sum('gross_amount');
+        $pendingPlatformFee = $pendingEntries->sum(function($e){
+            return $e->platform_fee ?? round(($e->gross_amount * 0.10), 2);
+        });
+        $pendingVendorRevenue = $pending - $pendingPlatformFee;
+
+        $totalGross = $entries->sum('gross_amount');
+        $totalPlatformFee = $entries->sum('platform_fee');
+
+        // pass computed platform/vendor totals so blade can display them
+        return view('vendor.ledger', compact(
+            'entries',
+            'receivedEntries',
+            'pendingEntries',
+            'received',
+            'receivedPlatformFee',
+            'vendorRevenue',
+            'pending',
+            'pendingPlatformFee',
+            'pendingVendorRevenue',
+            'totalGross',
+            'totalPlatformFee'
+        ));
     }
 
     // Packing slip printable view

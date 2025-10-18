@@ -14,6 +14,16 @@ class User extends Authenticatable
 
     public function vendorProfile() { return $this->hasOne(VendorProfile::class); }
 
+    public function isVendor(): bool
+    {
+        return isset($this->vendorProfile) && $this->vendorProfile->status === 'approved';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->is_admin ?? false;
+    }
+
     public function getAvatarUrlAttribute(): string
     {
         return $this->profile_photo_path

@@ -6,7 +6,12 @@
   <title>@yield('title','Heritage Hub')</title>
 
   {{-- Vite --}}
-  @vite(['resources/css/app.css','resources/js/app.js'])
+  @php $viteManifest = public_path('build/manifest.json'); @endphp
+  @if (file_exists($viteManifest))
+    @vite(['resources/css/app.css','resources/js/app.js'])
+  @else
+    {{-- Vite manifest missing; skipping asset injection (dev server or build not running) --}}
+  @endif
 
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -49,7 +54,11 @@
         </li>
 
         @auth
-  <li><a href="{{ route('home') }}">Hi, {{ auth()->user()->name }}</a></li>
+  <li style="display:flex;align-items:center;gap:8px">
+    @include('partials.notifications')
+    <a href="{{ route('home') }}">Hi, {{ auth()->user()->name }}</a>
+    <a style="margin-left:12px" href="{{ route('orders.index') }}">My Orders</a>
+  </li>
   <li>
     <form action="{{ route('auth.logout') }}" method="POST">@csrf
       <button type="submit" class="linklike">Logout</button>
@@ -206,6 +215,9 @@
 
   <main class="hh-main">@yield('content')</main>
 
+  {{-- Toast container for small notifications --}}
+  <div id="hh-toast" style="position:fixed;top:18px;right:18px;z-index:12000"></div>
+
   {{-- filigree divider before footer --}}
   <div class="hh-filigree" aria-hidden="true">
     <svg viewBox="0 0 1200 50" preserveAspectRatio="none">
@@ -242,6 +254,37 @@
     <div class="copy">© {{ date('Y') }} Heritage Hub</div>
   </footer>
 @includeIf('partials.auth-modal-fixed')
+
+@php
+  $flash = session('status') ?? session('success') ?? session('error');
+@endphp
+@if($flash)
+  <script>
+    (function(){
+      const container = document.getElementById('hh-toast');
+      const msg = {!! json_encode($flash) !!};
+      const el = document.createElement('div');
+      el.textContent = msg;
+      Object.assign(el.style,{background:'#2f231d',color:'#fff',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 8px 24px rgba(0,0,0,.18)'});
+      container.appendChild(el);
+      setTimeout(()=>el.remove(),3500);
+    })();
+  </script>
+@endif
+
+<script>
+  // helper to show toast from other scripts
+  window.hhToast = function(msg,opts={timeout:3000}){
+    const container = document.getElementById('hh-toast');
+    if(!container) return;
+    const el = document.createElement('div');
+    el.textContent = msg;
+    Object.assign(el.style,{background:'#2f231d',color:'#fff',padding:'10px 14px',borderRadius:'10px',boxShadow:'0 8px 24px rgba(0,0,0,.18)',marginTop:'8px'});
+    container.appendChild(el);
+    setTimeout(()=>el.remove(), opts.timeout || 3000);
+  }
+</script>
+@yield('scripts')
 
 </body>
 </html>
