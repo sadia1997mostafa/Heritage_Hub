@@ -19,6 +19,7 @@ class EventServiceProvider extends ServiceProvider
             SendShipmentStatusEmail::class,
             SendShipmentStatusSms::class,
             HandleShipmentDelivered::class,
+            \App\Listeners\CreateShipmentNotification::class,
         ],
     ];
 

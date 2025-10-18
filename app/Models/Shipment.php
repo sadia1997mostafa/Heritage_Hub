@@ -12,4 +12,9 @@ class Shipment extends Model
     {
         return $this->belongsTo(Order::class);
     }
+
+    public function vendor()
+    {
+        return $this->belongsTo(\App\Models\VendorProfile::class, 'vendor_id');
+    }
 }

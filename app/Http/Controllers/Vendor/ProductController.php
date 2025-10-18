@@ -113,4 +113,36 @@ class ProductController extends Controller
 
         return back()->with('status', '📤 Product submitted for admin approval.');
     }
+
+    /**
+     * Adjust stock for a product (increase or decrease) by delta.
+     */
+    public function adjustStock(Request $request, Product $product)
+    {
+        $vendorProfile = auth()->user()->vendorProfile;
+        if ($product->vendor_id !== $vendorProfile->id) abort(403);
+
+        $data = $request->validate([
+            'delta' => 'required|integer',
+            'reason' => 'nullable|string|max:255',
+        ]);
+
+        $before = (int) $product->stock;
+        $after = $before + (int) $data['delta'];
+        if ($after < 0) return back()->with('status', 'Stock cannot go below zero')->withInput();
+
+        $product->update(['stock' => $after]);
+
+        // record log
+        \App\Models\ProductStockLog::create([
+            'product_id' => $product->id,
+            'delta' => (int) $data['delta'],
+            'before' => $before,
+            'after' => $after,
+            'vendor_id' => $vendorProfile->id,
+            'reason' => $data['reason'] ?? 'manual adjustment',
+        ]);
+
+        return back()->with('status', 'Stock updated');
+    }
 }

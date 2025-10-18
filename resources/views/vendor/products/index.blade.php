@@ -37,14 +37,37 @@
             <span class="badge {{ $p->status }}">{{ ucfirst($p->status) }}</span>
           </td>
           <td style="padding:10px; text-align:center; white-space:nowrap">
-            @if($p->status === 'draft')
-              <form method="POST" action="{{ route('vendor.products.submit', $p) }}" style="display:inline-block">
+            {{-- Actions: submit + quick stock controls --}}
+            <div style="display:flex;gap:6px;align-items:center;justify-content:center">
+              @if($p->status === 'draft')
+                <form method="POST" action="{{ route('vendor.products.submit', $p) }}" style="display:inline-block">
+                  @csrf
+                  <button class="btn ghost" title="Submit for approval">Submit</button>
+                </form>
+              @endif
+
+              {{-- Quick +1 --}}
+              <form method="POST" action="{{ route('vendor.products.adjust_stock', $p) }}" style="display:inline-block">
                 @csrf
-                <button class="btn ghost" title="Submit for approval">Submit</button>
+                <input type="hidden" name="delta" value="1">
+                <button class="btn" title="Increase stock">+1</button>
               </form>
-            @else
-              —
-            @endif
+
+              {{-- Quick -1 --}}
+              <form method="POST" action="{{ route('vendor.products.adjust_stock', $p) }}" style="display:inline-block">
+                @csrf
+                <input type="hidden" name="delta" value="-1">
+                <button class="btn danger" title="Decrease stock">-1</button>
+              </form>
+
+              {{-- Custom adjust (small) --}}
+              <form method="POST" action="{{ route('vendor.products.adjust_stock', $p) }}" style="display:inline-flex;gap:6px;align-items:center">
+                @csrf
+                <input type="number" name="delta" value="0" style="width:64px;padding:6px;border:1px solid #ddd;border-radius:6px"/>
+                <input type="text" name="reason" placeholder="reason" style="width:120px;padding:6px;border:1px solid #ddd;border-radius:6px"/>
+                <button class="btn" style="padding:6px 8px">OK</button>
+              </form>
+            </div>
           </td>
         </tr>
       @empty

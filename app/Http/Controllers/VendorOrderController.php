@@ -89,7 +89,20 @@ class VendorOrderController extends Controller
         $totalGross = $entries->sum('gross_amount');
         $totalPlatformFee = $entries->sum('platform_fee');
 
-        return view('vendor.ledger', compact('entries','receivedEntries','pendingEntries','received','pending','totalGross','totalPlatformFee'));
+        // pass computed platform/vendor totals so blade can display them
+        return view('vendor.ledger', compact(
+            'entries',
+            'receivedEntries',
+            'pendingEntries',
+            'received',
+            'receivedPlatformFee',
+            'vendorRevenue',
+            'pending',
+            'pendingPlatformFee',
+            'pendingVendorRevenue',
+            'totalGross',
+            'totalPlatformFee'
+        ));
     }
 
     // Packing slip printable view

@@ -6,7 +6,12 @@
   <title>@yield('title','Heritage Hub')</title>
 
   {{-- Vite --}}
-  @vite(['resources/css/app.css','resources/js/app.js'])
+  @php $viteManifest = public_path('build/manifest.json'); @endphp
+  @if (file_exists($viteManifest))
+    @vite(['resources/css/app.css','resources/js/app.js'])
+  @else
+    {{-- Vite manifest missing; skipping asset injection (dev server or build not running) --}}
+  @endif
 
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -49,7 +54,11 @@
         </li>
 
         @auth
-  <li><a href="{{ route('home') }}">Hi, {{ auth()->user()->name }}</a></li>
+  <li style="display:flex;align-items:center;gap:8px">
+    @include('partials.notifications')
+    <a href="{{ route('home') }}">Hi, {{ auth()->user()->name }}</a>
+    <a style="margin-left:12px" href="{{ route('orders.index') }}">My Orders</a>
+  </li>
   <li>
     <form action="{{ route('auth.logout') }}" method="POST">@csrf
       <button type="submit" class="linklike">Logout</button>

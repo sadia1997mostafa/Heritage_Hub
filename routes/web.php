@@ -131,6 +131,7 @@ Route::middleware(['auth:vendor', 'vendor.approved'])->group(function () {
     Route::get('/products/create', [\App\Http\Controllers\Vendor\ProductController::class,'create'])->name('vendor.products.create');
     Route::post('/products', [\App\Http\Controllers\Vendor\ProductController::class,'store'])->name('vendor.products.store');
     Route::post('/products/{product}/submit', [\App\Http\Controllers\Vendor\ProductController::class,'submit'])->name('vendor.products.submit');
+    Route::post('/products/{product}/adjust-stock', [\App\Http\Controllers\Vendor\ProductController::class,'adjustStock'])->name('vendor.products.adjust_stock');
     // Vendor orders
     Route::get('/vendor/orders', [\App\Http\Controllers\VendorOrderController::class,'index'])->name('vendor.orders.index');
     Route::get('/vendor/orders/{shipment}', [\App\Http\Controllers\VendorOrderController::class,'show'])->name('vendor.orders.show');
@@ -163,6 +164,8 @@ Route::post('/payouts/{payout}/nope', [AdminPayoutController::class,'reject'])->
 
 
     Route::prefix('admin')->group(function () {
+        Route::get('/reports/platform-revenue', [\App\Http\Controllers\Admin\ReportController::class, 'platformRevenueProducts'])->name('admin.reports.platform-revenue');
+
         Route::get('/vendors',                   [AdminVendorController::class,'index'])->name('admin.vendors.index');
         Route::get('/vendors/{profile}',         [AdminVendorController::class,'show'])->name('admin.vendors.show');
         Route::post('/vendors/{profile}/approve',[AdminVendorController::class,'approve'])->name('admin.vendors.approve');
@@ -196,6 +199,9 @@ Route::get('/store/{slug}', [StorefrontController::class, 'show'])->name('shop.s
 
 
 Route::get('/ping', fn () => 'pong');
+
+// Local notifications
+Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('notifications.mark_all_read');
 
 /*
 |--------------------------------------------------------------------------

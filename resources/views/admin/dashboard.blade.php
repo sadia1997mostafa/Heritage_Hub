@@ -41,7 +41,7 @@
     <div style="color:#7B6A5B">Verify bKash/Nagad/Bank accounts</div>
   </a>
 
-  <a href="{{ route('admin.payouts.index') }}" class="card" style="text-decoration:none;color:inherit">
+  <a href="{{ route('admin.reports.platform-revenue') }}" class="card" style="text-decoration:none;color:inherit">
     <div style="font-weight:700">Platform Revenue</div>
     <div style="font-size:2rem;font-weight:800;color:#5A3E2B">৳ {{ number_format($totalPlatformRevenue,2) }}</div>
     <div style="color:#7B6A5B">Total collected platform fees (snapshot from ledger)</div>
