@@ -92,6 +92,19 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/admin/vlogs/{vlog}/approve', [VlogController::class,'approve'])->name('admin.vlogs.approve');
 });
 
+// Admin events moderation
+Route::middleware(['auth:admin'])->group(function () {
+    Route::get('/admin/events', [\App\Http\Controllers\EventController::class,'adminIndex'])->name('admin.events.index');
+    Route::post('/admin/events/{event}/approve', [\App\Http\Controllers\EventController::class,'approve'])->name('admin.events.approve');
+});
+
+// Events
+use App\Http\Controllers\EventController;
+Route::get('/events', [EventController::class,'index'])->name('events.index');
+Route::post('/events', [EventController::class,'store'])->middleware('auth')->name('events.store');
+Route::get('/events/{event}', [EventController::class,'show'])->name('events.show');
+Route::post('/events/{event}/rsvp', [EventController::class,'toggleRsvp'])->middleware('auth')->name('events.rsvp');
+
 Route::get('/heritage/{division}/{district?}', [HeritageController::class, 'page'])
     ->name('heritage.page');
 

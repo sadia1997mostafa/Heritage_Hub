@@ -14,6 +14,7 @@ class VlogController extends Controller
     public function index(Request $req)
     {
         $user = $req->user();
+        $tab = $req->query('tab','stories');
 
         // Story tales: all approved vlogs (public)
         $storyVlogs = Vlog::with(['user','images'])
@@ -31,7 +32,7 @@ class VlogController extends Controller
                 ->paginate(15, ['*'], 'my_page');
         }
 
-        return view('vlogs.index', compact('storyVlogs','myVlogs'));
+        return view('vlogs.index', compact('storyVlogs','myVlogs','tab'));
     }
 
     public function store(Request $req)

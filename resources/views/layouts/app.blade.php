@@ -9,9 +9,27 @@
   @php $viteManifest = public_path('build/manifest.json'); @endphp
   @if (file_exists($viteManifest))
     @vite(['resources/css/app.css','resources/js/app.js'])
+    {{-- Fallback: also inject the built app.css directly from the manifest in case @vite doesn't output tags in some envs --}}
+    @php
+      try {
+        $__hh_manifest = json_decode(file_get_contents($viteManifest), true);
+        if (isset($__hh_manifest['resources/css/app.css']['file'])) {
+          $__hh_css = 'build/' . $__hh_manifest['resources/css/app.css']['file'];
+        } else {
+          $__hh_css = null;
+        }
+      } catch (\Throwable $__hh_e) { $__hh_css = null; }
+    @endphp
+    @if(!empty($__hh_css))
+      <link rel="stylesheet" href="{{ asset($__hh_css) }}">
+    @endif
+    {{-- Note: do not hardcode specific hashed filenames here to avoid 404s during development; rely on the manifest or @vite tags. --}}
   @else
     {{-- Vite manifest missing; skipping asset injection (dev server or build not running) --}}
   @endif
+
+  {{-- Page-specific styles (allows views to push theme CSS) --}}
+  @stack('styles')
 
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -170,6 +188,7 @@
           <li><a href="{{ route('skills') }}" class="with-orn">Skill</a></li>
           <li><a href="{{ $a('app') }}" class="with-orn">App</a></li>
           <li><a href="{{ route('vlogs.index') }}" class="with-orn">Heritage Timeline</a></li>
+          <li><a href="{{ route('events.index') }}" class="with-orn">Events</a></li>
           <li><a href="{{ $a('contact') }}" class="with-orn">Contact</a></li>
         </ul>
       </div>
@@ -285,7 +304,7 @@
     setTimeout(()=>el.remove(), opts.timeout || 3000);
   }
 </script>
-@yield('scripts')
+@stack('scripts')
 
 </body>
 </html>

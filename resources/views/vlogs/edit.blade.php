@@ -3,18 +3,26 @@
 @section('title','Edit Vlog')
 
 @section('content')
-<div class="hh-container" style="padding:30px 0">
+<style>
+/* Inline vlog styles (minimal) */
+.vlog-container{ padding:30px 0; max-width:1120px; margin-inline:auto; }
+.vlog-form{ margin:18px 0; padding:14px; border-radius:12px; background:#fff; border:1px solid rgba(62,39,35,.06); }
+.form-control{ width:100%; padding:10px; border-radius:10px; border:1px solid rgba(62,39,35,.12); }
+.accent{ background: var(--hh-secondary, #c58940); border:1px solid var(--hh-secondary, #c58940); color:#2b1c11; padding:8px 14px; border-radius:10px; font-weight:800; }
+</style>
+
+<div class="vlog-container">
   <h1>Edit Vlog</h1>
 
-  <form method="POST" action="{{ route('vlogs.update', $vlog) }}" enctype="multipart/form-data">
+  <form method="POST" action="{{ route('vlogs.update', $vlog) }}" enctype="multipart/form-data" class="vlog-form">
     @csrf
-    <div style="margin-bottom:8px">
-      <input name="title" value="{{ old('title',$vlog->title) }}" placeholder="Short title (optional)" style="width:100%;padding:8px" />
+    <div class="mb-2">
+      <input name="title" value="{{ old('title',$vlog->title) }}" placeholder="Short title (optional)" class="form-control" />
     </div>
-    <div style="margin-bottom:8px">
-      <textarea name="body" rows="6" style="width:100%;padding:8px">{{ old('body',$vlog->body) }}</textarea>
+    <div class="mb-2">
+      <textarea name="body" rows="6" class="form-control">{{ old('body',$vlog->body) }}</textarea>
     </div>
-    <div style="margin-bottom:8px">
+    <div class="mb-2">
       <label>Attach images (optional)</label>
       <input type="file" name="images[]" multiple accept="image/*">
     </div>

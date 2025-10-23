@@ -3,99 +3,145 @@
 @section('title','Heritage Timeline')
 
 @section('content')
-<div class="hh-container" style="padding:30px 0">
+<style>
+/* Inline vlog styles — small subset copied from theme-events.css to guarantee appearance */
+.vlog-container{ padding:30px 0; max-width:1120px; margin-inline:auto; }
+.vlog-top{ display:flex; gap:10px; align-items:center; margin-bottom:12px; }
+.vlog-form{ margin:18px 0; padding:14px; border-radius:12px; background: linear-gradient(180deg,#FFF9F0,#FFF3E6); border:1px solid rgba(62,39,35,.06); }
+.vlog-form .form-control{ width:100%; padding:10px; border-radius:10px; border:1px solid rgba(62,39,35,.12); }
+.vlog-form .accent{ background: var(--hh-secondary); border:1px solid var(--hh-secondary); color:#2b1c11; padding:8px 14px; border-radius:10px; font-weight:800; }
+.vlog-grid{ display:grid; grid-template-columns: 1fr 360px; gap:20px; margin-top:18px; }
+.vlog-article{ padding:14px; border-radius:10px; background: linear-gradient(180deg,#FFF9F0,#FFF3E6); border:1px solid rgba(62,39,35,.04); box-shadow: 0 8px 20px rgba(10,8,6,0.04); margin-bottom:10px; }
+.vlog-head{ display:flex; gap:12px; align-items:center; margin-bottom:8px; }
+.vlog-avatar{ width:44px; height:44px; border-radius:8px; background:#eee; display:flex; align-items:center; justify-content:center; font-weight:800; color:#6b4434; }
+.vlog-title{ margin:6px 0; font-size:18px; color:var(--hh-brown-dark, #6b4434); font-weight:700; }
+.vlog-meta{ color:#6b6b6b; font-size:13px; }
+.vlog-body{ white-space:pre-wrap; color:#3b2a24; line-height:1.6; margin-top:6px; }
+.vlog-images{ display:flex; gap:12px; margin-top:10px; flex-wrap:wrap; }
+.vlog-img-thumb{ width:200px; height:150px; overflow:hidden; border:1px solid rgba(62,39,35,.06); border-radius:8px; }
+.vlog-img-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.vlog-actions{ display:flex; gap:10px; align-items:center; margin-top:10px; }
+.vlog-actions a, .vlog-actions button{ color:var(--hh-secondary, #c58940); font-weight:700; background:none; border:none; cursor:pointer; }
+.vlog-sidebar{ background: linear-gradient(180deg, rgba(250,243,224,0.7), rgba(245,236,216,0.6)); padding:12px; border-radius:12px; border:1px solid rgba(62,39,35,.04); }
+.vlog-sidebar h2{ font-size:18px; margin-bottom:8px; color:var(--hh-brown-dark, #6b4434); }
+.vlog-sidebar article{ padding:10px; border-bottom:1px solid rgba(62,39,35,.03); background: transparent; }
+.vlog-sidebar .excerpt{ color:#6b6b6b; font-size:13px; margin-top:6px; }
+@media (max-width:900px){ .vlog-grid{ grid-template-columns: 1fr; } .vlog-sidebar{ order:2; } }
+</style>
+
+<div class="vlog-container">
   <h1>Heritage Timeline</h1>
   <p>Share short vlogs about places, craft, and memory. Be respectful.</p>
 
+  {{-- tabs moved below the form so they appear under the post box as requested --}}
+
   @auth
-  <div style="margin:18px 0;padding:12px;border:1px solid #eee;border-radius:8px">
+  <div class="vlog-form">
     <form method="POST" action="{{ route('vlogs.store') }}" enctype="multipart/form-data">
       @csrf
-      <div style="margin-bottom:8px">
-        <input name="title" placeholder="Short title (optional)" style="width:100%;padding:8px" />
+      <div class="mb-2">
+        <input name="title" placeholder="Short title (optional)" class="form-control" />
       </div>
-      <div style="margin-bottom:8px">
-        <textarea name="body" rows="4" placeholder="Write your vlog" style="width:100%;padding:8px"></textarea>
+      <div class="mb-2">
+        <textarea name="body" rows="4" placeholder="Write your vlog" class="form-control"></textarea>
       </div>
-      <div style="margin-bottom:8px">
+      <div class="mb-2">
         <label>Attach images</label>
         <input type="file" name="images[]" multiple accept="image/*" />
       </div>
       <div style="text-align:right">
-        <button class="accent">Post Vlog</button>
+        <button type="submit" class="accent">Post Vlog</button>
       </div>
     </form>
   </div>
   @else
-  <p><a href="{{ route('login') }}?redirect={{ route('vlogs.index') }}">Log in</a> to post a vlog.</p>
+    <p><a href="{{ route('login') }}?redirect={{ route('vlogs.index') }}">Log in</a> to post a vlog.</p>
   @endauth
 
-  <div style="margin-top:18px;display:grid;grid-template-columns:1fr 380px;gap:20px">
+  {{-- small inner tabs under the form/login area --}}
+  <div class="vlog-top" style="margin-bottom:8px">
+    <a href="{{ route('vlogs.index', ['tab'=>'stories']) }}" class="btn btn-sm {{ ($tab ?? 'stories') === 'stories' ? 'btn-primary' : 'btn-outline-secondary' }}">Story Tales</a>
+    <a href="{{ route('vlogs.index', ['tab'=>'mine']) }}" class="btn btn-sm {{ ($tab ?? '') === 'mine' ? 'btn-primary' : 'btn-outline-secondary' }}">My Timeline</a>
+  </div>
+
+  <div class="vlog-grid">
     <div>
-      <h2>My Timeline</h2>
-      @if($myVlogs)
-        @foreach($myVlogs as $v)
-          <article style="padding:14px;border-bottom:1px solid #f0f0f0">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
-              <div style="width:44px;height:44px;border-radius:6px;background:#ddd;display:flex;align-items:center;justify-content:center">{{ strtoupper(substr($v->user->name,0,1)) }}</div>
+      @if(($tab ?? 'stories') === 'mine')
+        <h2>My Timeline</h2>
+        @if($myVlogs)
+          @foreach($myVlogs as $v)
+            <article class="vlog-article">
+              <div class="vlog-head">
+                <div class="vlog-avatar">{{ strtoupper(substr($v->user->name,0,1)) }}</div>
+                <div>
+                  <strong>{{ $v->user->name }}</strong>
+                  <div class="vlog-meta">{{ $v->published_at ? $v->published_at->diffForHumans() : $v->created_at->diffForHumans() }}</div>
+                </div>
+              </div>
+              @if($v->title)<div class="vlog-title">{{ $v->title }}</div>@endif
+              <div class="vlog-body">{!! $v->body_html !!}</div>
+
+              @if($v->images && $v->images->count())
+                <div class="vlog-images">
+                  @foreach($v->images as $img)
+                    <div class="vlog-img-thumb">
+                      <img src="{{ asset('storage/' . $img->path) }}" alt="vlog image">
+                    </div>
+                  @endforeach
+                </div>
+              @endif
+
+              <div class="vlog-actions">
+                <div><strong>Status:</strong> @if($v->approved)<span style="color:green">Approved</span>@else<span style="color:orange">Waiting for approval</span>@endif</div>
+                <div style="margin-left:auto"> <a href="{{ route('vlogs.edit', $v) }}">Edit</a> <form method="POST" action="{{ route('vlogs.destroy', $v) }}" style="display:inline">@csrf @method('DELETE')<button>Delete</button></form></div>
+              </div>
+            </article>
+          @endforeach
+
+          <div style="margin-top:12px">{{ $myVlogs->links('pagination::bootstrap-4') }}</div>
+        @else
+          <p>Log in to see and manage your vlogs.</p>
+        @endif
+      @else
+        <h2>Story Tales</h2>
+        @foreach($storyVlogs as $v)
+          <article class="vlog-article">
+            <div class="vlog-head">
+              <div class="vlog-avatar">{{ strtoupper(substr($v->user->name,0,1)) }}</div>
               <div>
                 <strong>{{ $v->user->name }}</strong>
-                <div style="color:#666;font-size:13px">{{ $v->published_at ? $v->published_at->diffForHumans() : $v->created_at->diffForHumans() }}</div>
+                <div class="vlog-meta">{{ $v->published_at ? $v->published_at->diffForHumans() : $v->created_at->diffForHumans() }}</div>
               </div>
             </div>
-            @if($v->title)<h3 style="margin:6px 0">{{ $v->title }}</h3>@endif
-            <div style="white-space:pre-wrap">{!! $v->body_html !!}</div>
-
-            @if($v->images && $v->images->count())
-              <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+            <div class="vlog-body">{!! $v->body_html !!}</div>
+            @if($v->images->count())
+              <div class="vlog-images">
                 @foreach($v->images as $img)
-                  <div style="width:160px;max-height:120px;overflow:hidden;border:1px solid #eee;padding:4px">
-                    <img src="{{ asset('storage/' . $img->path) }}" style="width:100%;height:auto;display:block" alt="vlog image">
+                  <div class="vlog-img-thumb">
+                    <img src="{{ asset('storage/' . $img->path) }}" alt="vlog image">
                   </div>
                 @endforeach
               </div>
             @endif
-
-            <div style="margin-top:8px">
-              <strong>Status:</strong>
-              @if($v->approved)
-                <span style="color:green">Approved</span>
-              @else
-                <span style="color:orange">Waiting for approval</span>
-              @endif
-            </div>
-
-            <div style="margin-top:8px">
-              <a href="{{ route('vlogs.edit', $v) }}">Edit</a>
-              <form method="POST" action="{{ route('vlogs.destroy', $v) }}" style="display:inline">@csrf @method('DELETE')<button>Delete</button></form>
-            </div>
           </article>
         @endforeach
 
-        <div style="margin-top:12px">{{ $myVlogs->links('pagination::bootstrap-4') }}</div>
-      @else
-        <p>Log in to see and manage your vlogs.</p>
+        <div style="margin-top:12px">{{ $storyVlogs->links('pagination::bootstrap-4') }}</div>
       @endif
     </div>
 
-    <aside>
-      <h2>Story Tales</h2>
-      @foreach($storyVlogs as $v)
-        <article style="padding:10px;border-bottom:1px solid #f3f3f3">
+    <aside class="vlog-sidebar">
+      {{-- Sidebar content duplicated for both tabs; keep storylist here for context when viewing mine as well --}}
+      <h2>Quick Story Feed</h2>
+      @foreach($storyVlogs->take(6) as $v)
+        <article>
           <strong>{{ $v->user->name }}</strong>
-          <div style="color:#666;font-size:13px">{{ $v->published_at ? $v->published_at->diffForHumans() : $v->created_at->diffForHumans() }}</div>
-          <div style="margin-top:6px;white-space:pre-wrap">{!! $v->body_html !!}</div>
-          @if($v->images->count())
-            <div style="display:flex;gap:6px;margin-top:6px">
-              @foreach($v->images as $img)
-                <img src="{{ asset('storage/' . $img->path) }}" style="width:80px;height:auto;border:1px solid #eee;padding:3px">
-              @endforeach
-            </div>
-          @endif
+          <div class="vlog-meta">{{ $v->published_at ? $v->published_at->diffForHumans() : $v->created_at->diffForHumans() }}</div>
+          <div class="excerpt">{!! Str::limit(strip_tags($v->body_html),120) !!}</div>
         </article>
       @endforeach
 
-      <div style="margin-top:12px">{{ $storyVlogs->links('pagination::bootstrap-4') }}</div>
+      <div style="margin-top:12px"><a href="{{ route('vlogs.index', ['tab'=>'stories']) }}">See all story tales</a></div>
     </aside>
   </div>
 </div>

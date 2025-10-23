@@ -9,6 +9,8 @@ use App\Models\ReturnRequest;
 use App\Policies\ReturnRequestPolicy;
 use App\Models\Vlog;
 use App\Policies\VlogPolicy;
+use App\Models\Event;
+// use App\Policies\EventPolicy; // optional: add if you implement event-edit permissions
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -24,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
         // map policies
     \Illuminate\Support\Facades\Gate::policy(ReturnRequest::class, ReturnRequestPolicy::class);
     \Illuminate\Support\Facades\Gate::policy(Vlog::class, VlogPolicy::class);
+    \Illuminate\Support\Facades\Gate::policy(Event::class, \App\Policies\EventPolicy::class);
 
         // Define vendor-only gate
         Gate::define('vendor-only', function (User $user) {
