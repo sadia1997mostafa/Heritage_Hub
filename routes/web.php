@@ -18,10 +18,12 @@ Route::post('/payments/bkash/execute', [App\Http\Controllers\BkashController::cl
 Route::get('/payments/bkash/{intent}/approve', [App\Http\Controllers\BkashController::class, 'approve'])->name('bkash.approve');
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 use App\Http\Controllers\HeritageController;
 use App\Http\Controllers\DistrictPageController;
 use App\Http\Controllers\MultiAuthController;
+use App\Http\Controllers\VlogController;
 
 // Admin & Vendor controllers in their proper namespaces
 use App\Http\Controllers\Admin\AdminDashboardController;
@@ -73,11 +75,32 @@ Route::middleware('auth')->group(function() {
 });
 Route::view('/skills', 'pages.skills')->name('skills');
 
+// Vlog timeline route must be registered before the generic heritage route so it isn't swallowed by the
+// dynamic parameter route `/heritage/{division}`. Register it here, above the generic handler.
+Route::get('/heritage/timeline', [VlogController::class,'index'])->name('vlogs.index');
+Route::post('/heritage/timeline', [VlogController::class,'store'])->middleware('auth')->name('vlogs.store');
+// Vlog management
+Route::middleware('auth')->group(function () {
+    Route::get('/heritage/timeline/{vlog}/edit', [VlogController::class,'edit'])->name('vlogs.edit');
+    Route::post('/heritage/timeline/{vlog}', [VlogController::class,'update'])->name('vlogs.update');
+    Route::delete('/heritage/timeline/{vlog}', [VlogController::class,'destroy'])->name('vlogs.destroy');
+});
+
+// Admin vlog moderation (under admin guard prefix)
+Route::middleware(['auth:admin'])->group(function () {
+    Route::get('/admin/vlogs', [VlogController::class,'adminIndex'])->name('admin.vlogs.index');
+    Route::post('/admin/vlogs/{vlog}/approve', [VlogController::class,'approve'])->name('admin.vlogs.approve');
+});
+
 Route::get('/heritage/{division}/{district?}', [HeritageController::class, 'page'])
     ->name('heritage.page');
 
 Route::get('/district/{slug}', [DistrictPageController::class, 'show'])
     ->name('district.show');
+
+// Public maker pages (reuses VendorProfile)
+use App\Http\Controllers\MakerController;
+Route::get('/makers/{slug}', [MakerController::class, 'show'])->name('makers.show');
 
 // Login page (GET) — renders a real login form. Accepts optional ?redirect= URL to return after login.
 Route::get('/login', function (Illuminate\Http\Request $request) {
@@ -124,9 +147,12 @@ Route::middleware(['auth:vendor', 'vendor.approved'])->group(function () {
 
     Route::get('/vendor/store/setup',  [VendorOnboardingController::class,'setupForm'])->name('vendor.store.setup');
     Route::post('/vendor/store/setup', [VendorOnboardingController::class,'setupSave'])->name('vendor.store.setup.save');
+    Route::delete('/vendor/store/gallery/{image}', [VendorOnboardingController::class,'removeGalleryImage'])->name('vendor.store.gallery.remove');
+    Route::get('/vendor/store/attach-debug-form', [VendorOnboardingController::class,'attachDebugForm'])->name('vendor.store.attach_debug_form');
 
     Route::get('/vendor/payout',       [VendorOnboardingController::class,'payoutForm'])->name('vendor.payout.form');
     Route::post('/vendor/payout',      [VendorOnboardingController::class,'payoutSave'])->name('vendor.payout.save');
+    Route::post('/vendor/store/attach-debug', [VendorOnboardingController::class,'attachDebugUploads'])->name('vendor.store.attach_debug');
     Route::get('/products', [\App\Http\Controllers\Vendor\ProductController::class,'index'])->name('vendor.products.index');
     Route::get('/products/create', [\App\Http\Controllers\Vendor\ProductController::class,'create'])->name('vendor.products.create');
     Route::post('/products', [\App\Http\Controllers\Vendor\ProductController::class,'store'])->name('vendor.products.store');
@@ -171,6 +197,9 @@ Route::post('/payouts/{payout}/nope', [AdminPayoutController::class,'reject'])->
         Route::post('/vendors/{profile}/approve',[AdminVendorController::class,'approve'])->name('admin.vendors.approve');
         Route::post('/vendors/{profile}/reject', [AdminVendorController::class,'reject'])->name('admin.vendors.reject');
 
+    // Admin maker verify toggle
+    Route::post('/makers/{profile}/verify', [\App\Http\Controllers\Admin\MakerController::class,'verify'])->name('admin.makers.verify');
+
         Route::get('/products', [\App\Http\Controllers\Admin\ProductApprovalController::class,'index'])->name('admin.products.index');
     Route::post('/products/{product}/approve', [\App\Http\Controllers\Admin\ProductApprovalController::class,'approve'])->name('admin.products.approve');
     Route::post('/products/{product}/reject', [\App\Http\Controllers\Admin\ProductApprovalController::class,'reject'])->name('admin.products.reject');
@@ -199,6 +228,47 @@ Route::get('/store/{slug}', [StorefrontController::class, 'show'])->name('shop.s
 
 
 Route::get('/ping', fn () => 'pong');
+
+// Heritage timeline routes are registered above the generic heritage route to avoid being matched
+// by the dynamic `/heritage/{division}` route.
+
+// Temporary debug upload endpoint (PUBLIC) - remove after debugging
+use Illuminate\Http\Request as _Req;
+Route::match(['get','post'], '/debug/vendor-upload', function(_Req $request) {
+    if ($request->isMethod('post')) {
+        $out = ['has_files'=>false,'files'=>[],'errors'=>[]];
+        try {
+            $out['has_files'] = count($request->files->all()) > 0;
+            foreach ($request->files->all() as $k => $v) {
+                if (is_array($v)) {
+                    foreach ($v as $i => $f) {
+                        // use putFileAs with a generated unique name to avoid calling hashName() on raw Symfony UploadedFile
+                        $name = uniqid().'_'.preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $f->getClientOriginalName());
+                        $path = Storage::disk('public')->putFileAs('debug/uploads', $f, $name);
+                        $out['files'][] = ['key'=>$k,'index'=>$i,'clientName'=>$f->getClientOriginalName(),'path'=>$path];
+                    }
+                } else {
+                    $f = $v;
+                    $name = uniqid().'_'.preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $f->getClientOriginalName());
+                    $path = Storage::disk('public')->putFileAs('debug/uploads', $f, $name);
+                    $out['files'][] = ['key'=>$k,'clientName'=>$f->getClientOriginalName(),'path'=>$path];
+                }
+            }
+        } catch (\Throwable $e) {
+            $out['errors'][] = $e->getMessage();
+        }
+        return response()->json($out);
+    }
+    $token = csrf_token();
+    $html = '<html><body>' .
+            '<h3>Debug upload</h3>' .
+            '<form method="POST" enctype="multipart/form-data">' .
+            '<input type="file" name="gallery[]" multiple>' .
+            '<button>Upload</button>' .
+            '<input type="hidden" name="_token" value="' . $token . '">' .
+            '</form></body></html>';
+    return $html;
+});
 
 // Local notifications
 Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('notifications.mark_all_read');

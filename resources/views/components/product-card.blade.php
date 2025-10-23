@@ -16,6 +16,9 @@
     <div class="hh-card-body px-3 py-3">
       <h3 class="text-sm font-semibold text-gray-800 leading-tight truncate">{{ $p->title }}</h3>
       <div class="text-xs text-gray-500 mt-1">{{ $p->category->name ?? '' }}</div>
+      @if($p->vendor)
+        <div class="text-xs mt-2"><a href="{{ route('makers.show', $p->vendor->slug) }}" class="text-indigo-600">By {{ $p->vendor->shop_name }}</a></div>
+      @endif
 
       <div class="mt-3 flex items-center justify-between">
         <div class="flex items-center text-sm text-gray-600">

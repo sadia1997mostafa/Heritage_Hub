@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use App\Models\User;
 use App\Models\ReturnRequest;
 use App\Policies\ReturnRequestPolicy;
+use App\Models\Vlog;
+use App\Policies\VlogPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -20,7 +22,8 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         // map policies
-        \Illuminate\Support\Facades\Gate::policy(ReturnRequest::class, ReturnRequestPolicy::class);
+    \Illuminate\Support\Facades\Gate::policy(ReturnRequest::class, ReturnRequestPolicy::class);
+    \Illuminate\Support\Facades\Gate::policy(Vlog::class, VlogPolicy::class);
 
         // Define vendor-only gate
         Gate::define('vendor-only', function (User $user) {

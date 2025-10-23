@@ -33,6 +33,8 @@
         • Store: 
         @if(!empty($product->vendor->slug))
           <a href="{{ route('shop.store.show',$product->vendor->slug) }}">{{ $product->vendor->shop_name }}</a>
+          {{-- link to maker profile --}}
+          · <a href="{{ route('makers.show', $product->vendor->slug) }}">Maker profile</a>
         @else
           <span>{{ $product->vendor->shop_name }}</span>
         @endif

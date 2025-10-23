@@ -46,6 +46,12 @@
     <div style="font-size:2rem;font-weight:800;color:#5A3E2B">৳ {{ number_format($totalPlatformRevenue,2) }}</div>
     <div style="color:#7B6A5B">Total collected platform fees (snapshot from ledger)</div>
   </a>
+  
+  <a href="{{ route('admin.vlogs.index') }}" class="card" style="text-decoration:none;color:inherit">
+    <div style="font-weight:700">Pending Vlogs</div>
+    <div style="font-size:2rem;font-weight:800;color:#5A3E2B">{{ $pendingVlogs ?? 0 }}</div>
+    <div style="color:#7B6A5B">Review and approve submitted vlogs</div>
+  </a>
 </div>
 
 {{-- Quick actions --}}

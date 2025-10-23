@@ -169,6 +169,7 @@
 
           <li><a href="{{ route('skills') }}" class="with-orn">Skill</a></li>
           <li><a href="{{ $a('app') }}" class="with-orn">App</a></li>
+          <li><a href="{{ route('vlogs.index') }}" class="with-orn">Heritage Timeline</a></li>
           <li><a href="{{ $a('contact') }}" class="with-orn">Contact</a></li>
         </ul>
       </div>

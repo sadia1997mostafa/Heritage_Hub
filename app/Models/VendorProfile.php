@@ -16,6 +16,10 @@ class VendorProfile extends Model
     public function user(): BelongsTo { return $this->belongsTo(User::class); }
     public function district(): BelongsTo { return $this->belongsTo(District::class); }
 
+    public function images() {
+        return $this->hasMany(VendorProfileImage::class,'vendor_profile_id')->orderBy('ordering','asc');
+    }
+
     // helpers (optional)
     public function getLogoUrlAttribute(): string
     {
@@ -24,6 +28,10 @@ class VendorProfile extends Model
     public function getBannerUrlAttribute(): string
     {
         return $this->banner_path ? asset('storage/'.$this->banner_path) : asset('images/default-banner.png');
+    }
+    public function getGalleryAttribute()
+    {
+        return $this->images->map(fn($i)=> asset('storage/'.$i->path))->toArray();
     }
     public function products() {
     return $this->hasMany(\App\Models\Product::class, 'vendor_id');
