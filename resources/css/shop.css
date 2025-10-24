@@ -5,6 +5,16 @@
   --hh-accent: #D9A441;
   --hh-muted: #7B6A5B;
 }
+/* Compatibility: some components use hh-* classes (shared across site). Provide lightweight aliases
+   so shop pages render consistently without changing many components. */
+.hh-card{display:block;background:linear-gradient(180deg,#fbf7f2,#f6efe4);border-radius:14px;overflow:hidden;color:var(--hh-ink);box-shadow:var(--shadow);transition:transform .18s ease}
+.hh-card:hover{transform:translateY(-4px)}
+.hh-card .hh-card-img, .hh-thumb, .hh-card-img, .hh-card-img.img-wrap{width:100%;height:180px;overflow:hidden;background:#faf7f2}
+.hh-thumb img, .hh-card-img img, .hh-card-img .img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.hh-meta, .hh-card-body{padding:12px;color:var(--hh-ink)}
+.hh-thumb{background-size:cover;background-position:center}
+.hh-card.vendor .hh-thumb{background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#fff}
+
 /* Parallax hero */
 .parallax-hero{position:relative;border-radius:14px;overflow:hidden;margin:18px 0 28px}
 .parallax-hero .parallax-layer{position:absolute;inset:0;background-size:cover;background-position:center;transform:translate3d(0,0,0);transition:transform .35s ease,filter .3s ease}
@@ -106,6 +116,31 @@ img[decoding="async"]{image-rendering:auto}
 .prod-title{font-weight:700;margin-bottom:6px}
 .prod-meta{display:flex;justify-content:space-between;color:var(--muted)}
 .price{color:var(--brand);font-weight:800}
+
+/* Featured crafts (prod-grid) aesthetic */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:12px}
+.prod-grid .hh-card{border-radius:16px;overflow:hidden;transition:transform .22s ease,box-shadow .22s ease;background:linear-gradient(180deg,#fff,#fffaf3);border:1px solid rgba(90,60,40,0.06);box-shadow:0 16px 40px rgba(20,12,8,0.06)}
+.prod-grid .hh-card:hover{transform:translateY(-6px);box-shadow:0 36px 70px rgba(18,12,8,0.12)}
+.prod-grid .hh-card .hh-card-img, .prod-grid .hh-card .img-wrap{height:200px;background:#faf7f2}
+.prod-grid .hh-card .hh-card-body{padding:12px}
+.prod-grid .hh-card h3{font-size:1.02rem;color:var(--hh-ink);margin-bottom:6px}
+.prod-grid .hh-card .text-sm{color:var(--hh-muted)}
+.prod-grid .hh-card button[data-product-id]{background:linear-gradient(90deg,var(--hh-accent), #c6952f);border:none}
+
+/* Featured vendors aesthetic */
+.vendor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:12px}
+.vendor-grid .vendor-card{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;transition:transform .22s ease,box-shadow .22s ease;background:linear-gradient(180deg,#fffef7,#fbf7f2);border:1px solid rgba(90,60,40,0.06);box-shadow:0 14px 36px rgba(18,12,8,0.06);text-decoration:none;color:inherit}
+.vendor-grid .vendor-card:hover{transform:translateY(-6px);box-shadow:0 36px 70px rgba(18,12,8,0.12)}
+.vendor-grid .vendor-card .vendor-logo{width:76px;height:76px;border-radius:12px;object-fit:cover;border:2px solid rgba(0,0,0,0.04);background:#fff}
+.vendor-grid .vendor-card .vendor-name{font-weight:800;color:var(--hh-ink);font-size:1.02rem}
+.vendor-grid .vendor-card .vendor-meta{color:var(--hh-muted);font-size:0.92rem}
+
+/* Make sure product grid and vendor grid respond nicely on small screens */
+@media(max-width:720px){
+  .prod-grid{grid-template-columns:repeat(2,1fr)}
+  .vendor-grid{grid-template-columns:repeat(1,1fr)}
+  .prod-grid .hh-card .hh-card-img, .prod-grid .hh-card .img-wrap{height:160px}
+}
 
 /* Product show */
 .product-show{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}

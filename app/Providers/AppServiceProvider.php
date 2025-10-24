@@ -52,7 +52,28 @@ class AppServiceProvider extends ServiceProvider
             });
 
             $vendors = Cache::remember('site:featured_vendors', now()->addHours(6), function () {
-                return \App\Models\VendorProfile::query()->limit(8)->get();
+                // Prefer modern VendorProfile records but also include legacy Vendor rows
+                $vp = collect();
+                $legacy = collect();
+                try {
+                    if (class_exists('\App\\Models\\VendorProfile')) {
+                        $vp = \App\Models\VendorProfile::query()->limit(8)->get();
+                    }
+                } catch (\Throwable $__e) {
+                    $vp = collect();
+                }
+
+                try {
+                    if (class_exists('\App\\Models\\Vendor')) {
+                        $legacy = \App\Models\Vendor::query()->limit(8)->get();
+                    }
+                } catch (\Throwable $__e) {
+                    $legacy = collect();
+                }
+
+                // Merge while preserving order: VendorProfile first, then legacy vendors.
+                $merged = $vp->concat($legacy)->slice(0, 8)->values();
+                return $merged;
             });
 
             $view->with('featuredCategories', $cats)

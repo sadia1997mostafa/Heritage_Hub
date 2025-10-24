@@ -3,8 +3,9 @@
 
 @section('content')
 <main class="hh-wrap">
-  {{-- Banner --}}
-  <section class="hh-banner" style="background-image:url('{{ $district->banner_url }}')">
+  {{-- Banner (image output commented out — add banner later) --}}
+  {{-- original banner image attribute: style="background-image:url('{{ $district->banner_url }}')" --}}
+  <section class="hh-banner no-image">
     <div class="hh-banner-overlay">
       <h1>{{ $district->name }} District</h1>
       <p class="hh-division">Division: {{ $division->name }}</p>
@@ -29,28 +30,58 @@
       <button class="hh-tab" data-tab="cuisine">Cuisine</button>
     </nav>
 
-    @php
-      $renderCards = function($items) {
-        if (empty($items)) return '<p class="hh-empty">No entries yet.</p>';
-        $out = '<div class="hh-grid">';
-        foreach ($items as $it) {
-          $out .= '<article class="hh-card">';
-          $out .= '<div class="hh-thumb" style="background-image:url(\''.e($it->hero_image ?? '').'\')"></div>';
-          $out .= '<div class="hh-meta">';
-          $out .= '<h3>'.e($it->title).'</h3>';
-          if ($it->location) $out .= '<p class="hh-loc">'.e($it->location).'</p>';
-          if ($it->summary)  $out .= '<p>'.e($it->summary).'</p>';
-          $out .= '</div></article>';
-        }
-        $out .= '</div>';
-        return $out;
-      };
-    @endphp
+    @foreach(['site','craft','festival','cuisine'] as $tab)
+      <div class="hh-tabpanel {{ $loop->first ? 'active' : '' }}" data-tabpanel="{{ $tab }}">
+        @php $items = $itemsByCat[$tab] ?? []; @endphp
+        @if(empty($items))
+          <p class="hh-empty">No entries yet.</p>
+        @else
+          <div class="hh-grid">
+            @foreach($items as $it)
+              @php
+                // choose image: hero_image or first media image of type 'image'
+                $img = $it->hero_image ?? (isset($it->media) && $it->media->count() ? ($it->media->where('type','image')->first()->url ?? null) : null);
+                $imgUrl = null;
+                if ($img) {
+                  if (preg_match('/^https?:\/\//i', $img)) {
+                    $imgUrl = $img;
+                  } else {
+                    $imgUrl = asset('storage/' . ltrim($img, '/'));
+                  }
+                }
+              @endphp
+              <article class="hh-card">
+                @php
+                  // Normalize image URL for secure pages to avoid mixed-content blocking
+                  $imgSrc = $imgUrl;
+                  if ($imgSrc && request()->isSecure() && preg_match('/^http:/i', $imgSrc)) {
+                    $imgSrc = preg_replace('/^http:/i', 'https:', $imgSrc);
+                  }
+                @endphp
 
-    <div class="hh-tabpanel active" data-tabpanel="site">{!! $renderCards($itemsByCat['site']) !!}</div>
-    <div class="hh-tabpanel" data-tabpanel="craft">{!! $renderCards($itemsByCat['craft']) !!}</div>
-    <div class="hh-tabpanel" data-tabpanel="festival">{!! $renderCards($itemsByCat['festival']) !!}</div>
-    <div class="hh-tabpanel" data-tabpanel="cuisine">{!! $renderCards($itemsByCat['cuisine']) !!}</div>
+                @if(!empty($imgSrc))
+                  <div class="hh-thumb">
+                    <img
+                      src="{{ $imgSrc }}"
+                      alt="{{ e($it->title) }}"
+                      style="width:100%;height:100%;object-fit:cover;display:block;"
+                      onerror="this.style.display='none';"
+                    />
+                  </div>
+                @else
+                  <div class="hh-thumb"></div>
+                @endif
+                <div class="hh-meta">
+                  <h3>{{ $it->title }}</h3>
+                  @if($it->location)<p class="hh-loc">{{ $it->location }}</p>@endif
+                  @if($it->summary)<p>{{ $it->summary }}</p>@endif
+                </div>
+              </article>
+            @endforeach
+          </div>
+        @endif
+      </div>
+    @endforeach
   </section>
 
   {{-- Gallery --}}
@@ -61,8 +92,16 @@
     @else
       <div class="hh-gallery-grid">
         @foreach($gallery as $g)
+          @php
+            $gUrl = $g['url'] ?? null;
+            if ($gUrl && !preg_match('/^https?:\/\//i', $gUrl)) {
+              $gUrl = asset('storage/' . ltrim($gUrl, '/'));
+            }
+          @endphp
           <figure>
-            <img src="{{ $g['url'] }}" alt="{{ $g['caption'] ?? 'Photo' }}">
+            @if(!empty($gUrl))
+              <img src="{{ $gUrl }}" alt="{{ $g['caption'] ?? 'Photo' }}">
+            @endif
             @if(!empty($g['caption']))<figcaption>{{ $g['caption'] }}</figcaption>@endif
           </figure>
         @endforeach
@@ -70,43 +109,96 @@
     @endif
   </section>
 
-  {{-- Sources --}}
-  <section class="hh-sources">
-    <h2>Sources</h2>
-    @if($district->sources->isEmpty())
-      <p class="hh-empty">No sources listed.</p>
-    @else
-      <ul>
-        @foreach($district->sources as $s)
-          <li>
-            @if($s->url)
-              <a href="{{ $s->url }}" target="_blank" rel="noopener">{{ $s->title }}</a>
-            @else
-              {{ $s->title }}
-            @endif
-          </li>
-        @endforeach
-      </ul>
-    @endif
-  </section>
+  {{-- Sources removed intentionally to simplify the district page. --}}
 
-  {{-- Explore Local Vendors --}}
+  {{-- Explore Local Vendors (show only vendors that match this district) --}}
   <section class="hh-vendors">
     <h2>Explore Local Vendors</h2>
-    @if($district->vendors->isEmpty())
+
+    @php
+      // Start with any vendors already eager-loaded on the district
+      $vendors = $district->vendors ?? collect();
+
+      // If none, attempt a safe fallback query matching by district_id or district name.
+      if (empty($vendors) || $vendors->isEmpty()) {
+        try {
+          // Prefer legacy Vendor table if it exists
+          if (class_exists('\App\\Models\\Vendor')) {
+            $vendors = \App\Models\Vendor::where('district_id', $district->id)
+              ->orWhere('district', $district->name)
+              ->get();
+          }
+
+          // Also include VendorProfile entries where applicable (newer storefront).
+          // Merge results so both legacy vendors and vendor_profiles show on the district page.
+          if (class_exists('\App\\Models\\VendorProfile')) {
+            $vp = \App\Models\VendorProfile::where(function($q) use ($district) {
+              $q->where('district_id', $district->id)
+                ->orWhere('shop_name', 'like', '%' . $district->name . '%')
+                ->orWhere('address', 'like', '%' . $district->name . '%');
+            })->get();
+
+            if ($vp && $vp->isNotEmpty()) {
+              // If $vendors is empty, use the VendorProfile collection; otherwise merge them.
+              $vendors = (empty($vendors) || $vendors->isEmpty()) ? $vp : $vendors->merge($vp);
+            }
+          }
+
+          // ensure we have a collection
+          if (empty($vendors)) $vendors = collect();
+        } catch (\Throwable $e) {
+          // On any error (missing table/column), fall back to empty collection
+          $vendors = collect();
+        }
+      }
+    @endphp
+
+    @if($vendors->isEmpty())
       <p class="hh-empty">No vendors yet.</p>
     @else
       <div class="hh-grid">
-        @foreach($district->vendors as $v)
+        @foreach($vendors as $v)
+          @php
+            // Support both legacy `Vendor` and newer `VendorProfile` attribute names.
+            $displayName = $v->name ?? $v->shop_name ?? 'Shop';
+            $logoUrl = null;
+
+            // VendorProfile may expose a `logo_url` accessor; legacy Vendor uses `logo_url` column.
+            if (isset($v->logo_url) && $v->logo_url) {
+              $logo = $v->logo_url;
+            } elseif (isset($v->shop_logo_path) && $v->shop_logo_path) {
+              $logo = asset('storage/' . ltrim($v->shop_logo_path, '/'));
+            } else {
+              $logo = null;
+            }
+
+            if ($logo) {
+              if (preg_match('/^https?:\/\//i', $logo)) {
+                $logoUrl = $logo;
+              } else {
+                $logoUrl = $logo; // already asset() when shop_logo_path used
+              }
+            }
+
+            $tags = $v->tags ?? $v->vendor_category ?? null;
+            $desc = $v->description ?? $v->heritage_story ?? null;
+            $shopUrl = $v->shop_url ?? null;
+            $websiteUrl = $v->website_url ?? null;
+          @endphp
+
           <article class="hh-card vendor">
-            <div class="hh-thumb" style="background-image:url('{{ $v->logo_url }}')"></div>
+            @if($logoUrl)
+              <div class="hh-thumb"><img src="{{ $logoUrl }}" alt="{{ e($displayName) }}"></div>
+            @else
+              <div class="hh-thumb"></div>
+            @endif
             <div class="hh-meta">
-              <h3>{{ $v->name }}</h3>
-              @if($v->tags)<p class="hh-tags">{{ $v->tags }}</p>@endif
-              @if($v->description)<p>{{ $v->description }}</p>@endif
+              <h3>{{ $displayName }}</h3>
+              @if(!empty($tags))<p class="hh-tags">{{ $tags }}</p>@endif
+              @if(!empty($desc))<p>{{ $desc }}</p>@endif
               <div class="hh-actions">
-                @if($v->shop_url)<a href="{{ $v->shop_url }}">Shop</a>@endif
-                @if($v->website_url)<a href="{{ $v->website_url }}" target="_blank" rel="noopener">Website</a>@endif
+                @if(!empty($shopUrl))<a href="{{ $shopUrl }}">Shop</a>@endif
+                @if(!empty($websiteUrl))<a href="{{ $websiteUrl }}" target="_blank" rel="noopener">Website</a>@endif
               </div>
             </div>
           </article>

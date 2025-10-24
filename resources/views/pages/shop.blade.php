@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('title','Shop — Heritage Hub')
 
+@push('styles') @vite(['resources/css/shop.css']) @endpush
+
 @section('content')
   <section class="parallax-hero">
     <div class="parallax-layer" style='background-image:url("{{ asset("images/heritage-map.jpg") }}")'></div>
@@ -16,11 +18,44 @@
   <section class="shop-rotator pad-section">
     <div class="hh-container">
       <div class="rotator-viewport">
+        @php
+          // List slides here: relative paths (under public/) or full remote URLs (https preferred)
+          $slides = [
+            'images/shop.png',
+            'https://cdn.arabsstock.com/uploads/images/127174/preserving-saudi-heritage-a-close-up-thumbnail-127174.webp',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDEeGeWCYS-xeupx3MpTvTmt4H9nPTT9eJmg&s',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR46FAto3vKTegLp_ZGu3MPhdZadpIVoLZbBNC4khNsU4WSNRoucdW6SE_hTKZ4Bq60W98&usqp=CAU',
+            'https://images.stockcake.com/public/b/6/f/b6f70256-f91e-43d6-af02-d2799b6a2c62_medium/weaving-traditional-textiles-stockcake.jpg',
+            'https://media.istockphoto.com/id/872166732/photo/an-intangible-cultural-heritage-of-humanity.jpg?s=170667a&w=0&k=20&c=5ypLv9ThOvbcs0QSWOgOR8mU5rI_kSlW4dhdHp-4XS8=',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7S_5FcUNkFC5lNuJ7ylXzCifhipRICntRQA&s',
+            'https://blog.yazati.com/wp-content/uploads/2025/04/How-Traditional-Handicrafts-Are-Making-a-Comeback-1200x675.png',
+            'https://tripjive.com/wp-content/uploads/2024/11/Authentic-Bhutanese-handcrafted-items-1024x585.jpg'
+          ];
+          $placeholder = asset('images/default-placeholder.svg');
+        @endphp
+
         <div class="rotator" aria-hidden="false">
-          <div class="rotor-slide"><img src="{{ asset('images/shop-rot-1.jpg') }}" alt="Crafts: textiles" loading="lazy"></div>
-          <div class="rotor-slide"><img src="{{ asset('images/shop-rot-2.jpg') }}" alt="Crafts: pottery" loading="lazy"></div>
-          <div class="rotor-slide"><img src="{{ asset('images/shop-rot-3.jpg') }}" alt="Weaving close-up" loading="lazy"></div>
-          <div class="rotor-slide"><img src="{{ asset('images/shop-rot-4.jpg') }}" alt="Artisan at work" loading="lazy"></div>
+          @foreach($slides as $s)
+            @php
+              // decide if remote URL or local asset
+              $slideUrl = preg_match('/^https?:\/\//i', $s) ? $s : asset($s);
+              // If current request is secure and slide is http, try to normalize to https
+              if (request()->isSecure() && preg_match('/^http:/i', $slideUrl)) {
+                $slideUrl = preg_replace('/^http:/i','https:',$slideUrl);
+              }
+            @endphp
+
+            <div class="rotor-slide">
+              <img
+                src="{{ $slideUrl }}"
+                alt="Shop slide {{ $loop->iteration }}"
+                loading="lazy"
+                width="1200" height="600"
+                style="width:100%;height:260px;object-fit:cover;display:block"
+                onerror="this.onerror=null;this.src='{{ $placeholder }}';"
+              />
+            </div>
+          @endforeach
         </div>
       </div>
       <div class="rotator-controls">
