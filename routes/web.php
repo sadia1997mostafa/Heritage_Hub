@@ -111,6 +111,10 @@ Route::get('/heritage/{division}/{district?}', [HeritageController::class, 'page
 Route::get('/district/{slug}', [DistrictPageController::class, 'show'])
     ->name('district.show');
 
+// District chat proxy (server-side OpenAI) — accepts { question }
+Route::post('/district/{slug}/chat', [\App\Http\Controllers\OpenAIChatController::class, 'chat'])
+    ->name('district.chat');
+
 // Public maker pages (reuses VendorProfile)
 use App\Http\Controllers\MakerController;
 Route::get('/makers/{slug}', [MakerController::class, 'show'])->name('makers.show');

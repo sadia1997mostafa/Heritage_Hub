@@ -148,44 +148,42 @@
         <ul class="hh-menu">
           <li><a href="{{ route('home') }}" class="with-orn">Home</a></li>
           <li><a href="{{ $a('about') }}" class="with-orn">About</a></li>
-          <li><a href="{{ $a('explore') }}" class="with-orn">Explore</a></li>
-          <div class="mega-row">
-  <a href="{{ route('shop') }}" class="with-orn" aria-haspopup="true" aria-expanded="false">Shop</a>
-  <div class="mega" role="menu" aria-label="Shop categories">
-            <a href="{{ route('shop.category.show', 'jamdani') }}">Jamdani</a>
-            <a href="{{ route('shop.category.show', 'muslin') }}">Muslin</a>
-            <a href="{{ route('shop.category.show', 'nakshi-kantha') }}">Nakshi Kantha</a>
-            <a href="{{ route('shop.category.show', 'tangail-saree') }}">Tangail Saree</a>
-        <a href="{{ route('shop') }}?cat=Muslin">Muslin</a>
-        <a href="{{ route('shop') }}?cat=Nakshi Kantha">Nakshi Kantha</a>
-        <a href="{{ route('shop') }}?cat=Tangail Saree">Tangail Saree</a>
-            <a href="{{ route('shop.category.show', 'woodcarving') }}">Woodcarving</a>
-            <a href="{{ route('shop.category.show', 'shital-pati') }}">Shital Pati</a>
-            <a href="{{ route('shop.category.show', 'rickshaw-art') }}">Rickshaw Art</a>
-            <a href="{{ route('shop.category.show', 'bamboo-cane') }}">Bamboo & Cane</a>
-        <a href="{{ route('shop') }}?cat=Shital Pati">Shital Pati</a>
-        <a href="{{ route('shop') }}?cat=Rickshaw Art">Rickshaw Art</a>
-        <a href="{{ route('shop') }}?cat=Bamboo & Cane">Bamboo & Cane</a>
-            <a href="{{ route('shop.category.show', 'dokra-metal') }}">Dokra Metal</a>
-            <a href="{{ route('shop.category.show', 'brass-copper') }}">Brass & Copper</a>
-            <a href="{{ route('shop.category.show', 'terracotta') }}">Terracotta</a>
-            <a href="{{ route('shop.category.show', 'pottery') }}">Pottery</a>
-        <a href="{{ route('shop') }}?cat=Brass & Copper">Brass & Copper</a>
-        <a href="{{ route('shop') }}?cat=Terracotta">Terracotta</a>
-        <a href="{{ route('shop') }}?cat=Pottery">Pottery</a>
-            <a href="{{ route('shop.category.show', 'folk-masks') }}">Folk Masks</a>
-            <a href="{{ route('shop.category.show', 'nakshi-dolls') }}">Nakshi Dolls</a>
-            <a href="{{ route('shop.category.show', 'scroll-art') }}">Scroll Art</a>
-            <a href="{{ route('shop.category.show', 'festival-decor') }}">Festival Decor</a>
-        <a href="{{ route('shop') }}?cat=Nakshi Dolls">Nakshi Dolls</a>
-        <a href="{{ route('shop') }}?cat=Scroll Art">Scroll Art</a>
-        <a href="{{ route('shop') }}?cat=Festival Decor">Festival Decor</a>
-      </div>
-    </div>
-  </div>
-</li>
+          <li class="has-mega">
+            <a href="{{ route('shop') }}" class="with-orn" aria-haspopup="true" aria-expanded="false">Shop</a>
+            <div class="mega" role="menu" aria-label="Shop categories">
+              <div class="mega-row">
+                <a href="{{ route('shop.category.show', 'jamdani') }}">Jamdani</a>
+                <a href="{{ route('shop.category.show', 'muslin') }}">Muslin</a>
+                <a href="{{ route('shop.category.show', 'nakshi-kantha') }}">Nakshi Kantha</a>
+                <a href="{{ route('shop.category.show', 'tangail-saree') }}">Tangail Saree</a>
+                <a href="{{ route('shop') }}?cat=Muslin">Muslin</a>
+                <a href="{{ route('shop') }}?cat=Nakshi Kantha">Nakshi Kantha</a>
+                <a href="{{ route('shop') }}?cat=Tangail Saree">Tangail Saree</a>
+                <a href="{{ route('shop.category.show', 'woodcarving') }}">Woodcarving</a>
+                <a href="{{ route('shop.category.show', 'shital-pati') }}">Shital Pati</a>
+                <a href="{{ route('shop.category.show', 'rickshaw-art') }}">Rickshaw Art</a>
+                <a href="{{ route('shop.category.show', 'bamboo-cane') }}">Bamboo & Cane</a>
+                <a href="{{ route('shop') }}?cat=Shital Pati">Shital Pati</a>
+                <a href="{{ route('shop') }}?cat=Rickshaw Art">Rickshaw Art</a>
+                <a href="{{ route('shop') }}?cat=Bamboo & Cane">Bamboo & Cane</a>
+                <a href="{{ route('shop.category.show', 'dokra-metal') }}">Dokra Metal</a>
+                <a href="{{ route('shop.category.show', 'brass-copper') }}">Brass & Copper</a>
+                <a href="{{ route('shop.category.show', 'terracotta') }}">Terracotta</a>
+                <a href="{{ route('shop.category.show', 'pottery') }}">Pottery</a>
+                <a href="{{ route('shop') }}?cat=Brass & Copper">Brass & Copper</a>
+                <a href="{{ route('shop') }}?cat=Terracotta">Terracotta</a>
+                <a href="{{ route('shop') }}?cat=Pottery">Pottery</a>
+                <a href="{{ route('shop.category.show', 'folk-masks') }}">Folk Masks</a>
+                <a href="{{ route('shop.category.show', 'nakshi-dolls') }}">Nakshi Dolls</a>
+                <a href="{{ route('shop.category.show', 'scroll-art') }}">Scroll Art</a>
+                <a href="{{ route('shop.category.show', 'festival-decor') }}">Festival Decor</a>
+                <a href="{{ route('shop') }}?cat=Nakshi Dolls">Nakshi Dolls</a>
+                <a href="{{ route('shop') }}?cat=Scroll Art">Scroll Art</a>
+                <a href="{{ route('shop') }}?cat=Festival Decor">Festival Decor</a>
+              </div>
+            </div>
+          </li>
 
-          <li><a href="{{ route('skills') }}" class="with-orn">Skill</a></li>
           <li><a href="{{ $a('app') }}" class="with-orn">App</a></li>
           <li><a href="{{ route('vlogs.index') }}" class="with-orn">Heritage Timeline</a></li>
           <li><a href="{{ route('events.index') }}" class="with-orn">Events</a></li>

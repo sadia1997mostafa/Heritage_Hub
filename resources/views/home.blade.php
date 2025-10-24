@@ -10,7 +10,7 @@
       <p class="reveal delay-1">Explore heritage cities, crafts, and living culture.</p>
       <div class="hero-cta reveal delay-2">
         <a class="btn-primary" href="{{ route('shop') }}">See All Shops</a>
-        <a class="btn-ghost" href="{{ route('skills') }}">Learn a Skill</a>
+        <a class="btn-ghost" href="{{ route('skills') }}">Events</a>
       </div>
     </div>
   </section>
@@ -26,18 +26,7 @@
   </section>
 
   {{-- EXPLORE (cities preview) --}}
-  <section id="explore" class="pad-section hh-container">
-    <h2 class="section-title">Explore Cities</h2>
-    <p class="section-text">Pick a city and start your journey.</p>
-    <div class="city-grid">
-      <a class="city-card" href="{{ route('shop') }}?city=Dhaka">Dhaka</a>
-      <a class="city-card" href="{{ route('shop') }}?city=Chittagong">Chittagong</a>
-      <a class="city-card" href="{{ route('shop') }}?city=Rajshahi">Rajshahi</a>
-      <a class="city-card" href="{{ route('shop') }}?city=Khulna">Khulna</a>
-      <a class="city-card" href="{{ route('shop') }}?city=Sylhet">Sylhet</a>
-      <a class="city-card" href="{{ route('shop') }}?city=Barishal">Barishal</a>
-    </div>
-  </section>
+  {{-- EXPLORE (cities preview) removed per request --}}
 
   {{-- SEE ALL SHOPS (CTA block) --}}
   <section class="pad-section hh-container">

@@ -59,3 +59,27 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## OpenAI integration (chat)
+
+This project includes a small server-side proxy to call the OpenAI Chat API for the district chat widget.
+
+To enable it locally or in production:
+
+- Create an OpenAI API key on https://platform.openai.com (Account → API keys → Create new secret key). Do NOT share this key publicly.
+- Add the key to your project `.env` (do NOT commit it):
+
+```
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+- Rebuild config cache after editing `.env`:
+
+```powershell
+php artisan config:clear
+php artisan config:cache
+```
+
+- The district chat widget will POST to `/district/{slug}/chat` and the server will forward the request to OpenAI using the key above.
+
+Security note: If you accidentally pasted your key publicly (for example, into a chat or a public repo), revoke it immediately from the OpenAI dashboard and create a new key.

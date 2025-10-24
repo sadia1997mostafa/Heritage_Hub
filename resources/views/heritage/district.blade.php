@@ -117,6 +117,167 @@
 </main>
 @endsection
 
+{{-- Chat widget (fast demo: client-side OpenAI calls) --}}
+<div id="hh-chat-root">
+  <button id="hh-chat-open" title="Ask about this district">💬 Ask</button>
+  <div id="hh-chat-modal" aria-hidden="true">
+    <div class="hh-chat-panel">
+      <header>
+        <strong>District Chat — {{ $district->name }}</strong>
+        <button id="hh-chat-close">✕</button>
+      </header>
+      <section class="hh-chat-body" id="hh-chat-body"></section>
+      <footer>
+        <input id="hh-api-key" placeholder="Paste OpenAI API key (sk-...)" />
+        <input id="hh-chat-input" placeholder="Ask a question about this district" />
+        <button id="hh-chat-send">Send</button>
+      </footer>
+      <div class="hh-chat-note">Note: this demo calls OpenAI directly from your browser; do not paste production secrets here.</div>
+    </div>
+  </div>
+</div>
+
+@push('styles')
+<style>
+#hh-chat-root { position: fixed; right: 18px; bottom: 18px; z-index:13000 }
+#hh-chat-open { background:#b68b46;color:#fff;border:none;padding:10px 14px;border-radius:50%;box-shadow:0 8px 20px rgba(0,0,0,.12);cursor:pointer }
+#hh-chat-modal{ position:fixed; right:18px; bottom:78px; width:360px; max-width:92vw; display:none }
+.hh-chat-panel{ background:#fff;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;display:flex;flex-direction:column;height:520px }
+.hh-chat-panel header{ padding:12px 14px;background:linear-gradient(90deg,#f7efe0,#fff);display:flex;justify-content:space-between;align-items:center }
+.hh-chat-body{ padding:12px; overflow:auto; flex:1; background:#fcfbf8 }
+.hh-chat-body .msg{ margin-bottom:10px }
+.hh-chat-body .msg.user{ text-align:right }
+.hh-chat-body .msg .bubble{ display:inline-block;padding:8px 12px;border-radius:12px;max-width:86% }
+.hh-chat-body .msg.user .bubble{ background:#e6e6e6 }
+.hh-chat-body .msg.bot .bubble{ background:#fff7ec;border:1px solid #f0d9b0 }
+.hh-chat-panel footer{ padding:10px; display:flex; gap:8px; align-items:center; background:#fff }
+.hh-chat-panel footer input[type="text"], .hh-chat-panel footer input[type="password"]{ flex:1;padding:8px;border:1px solid #e6d3a8;border-radius:8px }
+.hh-chat-note{ font-size:12px;color:#7a5a3a;padding:8px 12px }
+#hh-api-key{ font-size:12px }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+(function(){
+  const slug = '{{ $district->slug }}';
+  const csrf = '{{ csrf_token() }}';
+  let districtData = null;
+
+  async function fetchDistrict(){
+    try {
+      const res = await fetch(`/api/districts/${encodeURIComponent(slug)}`);
+      if (!res.ok) return null;
+      const json = await res.json();
+      districtData = json.data || json;
+      return districtData;
+    } catch(e){ return null }
+  }
+
+  // UI refs
+  const openBtn = document.getElementById('hh-chat-open');
+  const modal = document.getElementById('hh-chat-modal');
+  const closeBtn = document.getElementById('hh-chat-close');
+  const bodyEl = document.getElementById('hh-chat-body');
+  const input = document.getElementById('hh-chat-input');
+  const sendBtn = document.getElementById('hh-chat-send');
+  const apiKeyEl = document.getElementById('hh-api-key');
+
+  function appendMsg(who, text){
+    const div = document.createElement('div'); div.className = 'msg ' + (who==='user'?'user':'bot');
+    const bubble = document.createElement('div'); bubble.className = 'bubble'; bubble.textContent = text;
+    div.appendChild(bubble); bodyEl.appendChild(div); bodyEl.scrollTop = bodyEl.scrollHeight;
+  }
+
+  openBtn.addEventListener('click', async () => {
+    modal.style.display = 'block'; modal.setAttribute('aria-hidden','false');
+    if (!districtData) {
+      appendMsg('bot','Loading district data...');
+      await fetchDistrict();
+      appendMsg('bot','District data loaded. You can ask me anything about this district.');
+    }
+  });
+  closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); bodyEl.innerHTML=''; districtData=null });
+
+  async function askOpenAI(question){
+    appendMsg('user', question);
+    appendMsg('bot','Thinking...');
+
+    // Try server-side proxy first
+    try {
+      const resp = await fetch(`/district/${encodeURIComponent(slug)}/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrf,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ question })
+      });
+      const j = await resp.json();
+      const last = bodyEl.querySelector('.msg.bot:last-child'); if (last) last.remove();
+      if (!resp.ok) {
+        // If server says no key configured and user provided a key, fallback to client direct call
+        if (j && j.error && /not configured/i.test(j.error) && apiKeyEl.value.trim()) {
+          return askDirectOpenAI(question, apiKeyEl.value.trim());
+        }
+        return appendMsg('bot', 'Server error: ' + (j.message || j.error || JSON.stringify(j)));
+      }
+      if (j.reply) {
+        return appendMsg('bot', j.reply);
+      }
+      return appendMsg('bot', 'No reply from server.');
+    } catch (err) {
+      const last = bodyEl.querySelector('.msg.bot:last-child'); if (last) last.remove();
+      // network error — fallback to direct browser call if key available
+      if (apiKeyEl.value.trim()) {
+        return askDirectOpenAI(question, apiKeyEl.value.trim());
+      }
+      appendMsg('bot', 'Request failed: ' + err.message);
+    }
+  }
+
+  // Direct client-side OpenAI call fallback
+  async function askDirectOpenAI(question, key){
+    appendMsg('bot','Thinking...');
+    const contextParts = [];
+    if (districtData && districtData.district) {
+      contextParts.push(`District: ${districtData.district.name}. Intro: ${districtData.district.intro_html || ''}`);
+    }
+    if (districtData && districtData.itemsByCat) {
+      Object.keys(districtData.itemsByCat).forEach(cat => {
+        const items = districtData.itemsByCat[cat] || [];
+        if (items.length) {
+          contextParts.push(`${cat} items: ${items.slice(0,6).map(i=>i.title).join(', ')}`);
+        }
+      });
+    }
+    const system = `You are a helpful assistant that answers questions about a district. Use ONLY the context provided. If answer is not in context, say you don't know and offer suggestions.`;
+    const userPrompt = `Context:\n${contextParts.join('\n')}\n\nQuestion: ${question}`;
+    try {
+      const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'Authorization':'Bearer ' + key },
+        body: JSON.stringify({ model:'gpt-3.5-turbo', messages:[{role:'system',content:system},{role:'user',content:userPrompt}], max_tokens:512 })
+      });
+      const j = await resp.json();
+      const last = bodyEl.querySelector('.msg.bot:last-child'); if (last) last.remove();
+      if (j.error) { appendMsg('bot', 'OpenAI error: ' + (j.error.message || JSON.stringify(j.error))); return; }
+      const text = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content ? j.choices[0].message.content.trim() : JSON.stringify(j);
+      appendMsg('bot', text);
+    } catch(err){
+      const last = bodyEl.querySelector('.msg.bot:last-child'); if (last) last.remove();
+      appendMsg('bot', 'Request failed: ' + err.message);
+    }
+  }
+
+  sendBtn.addEventListener('click', ()=>{ const q = input.value.trim(); if (!q) return; input.value=''; askOpenAI(q); });
+  input.addEventListener('keydown', (e)=>{ if (e.key==='Enter') { e.preventDefault(); sendBtn.click(); } });
+
+})();
+</script>
+@endpush
+
 @push('styles')
 <style>
 .hh-wrap{max-width:1120px;margin:0 auto;padding:16px}
