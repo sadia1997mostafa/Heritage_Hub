@@ -46,7 +46,7 @@ class EventController extends Controller
             'ends_at' => $req->ends_at,
             'location' => $req->location,
             'is_public' => true,
-            // Admin approval required
+    
             'approved' => false,
         ]);
 
@@ -76,7 +76,7 @@ class EventController extends Controller
 
         $event->attendees()->syncWithoutDetaching([$user->id => ['status' => $req->status]]);
 
-        // If AJAX request, return JSON with updated counts and rendered attendees HTML
+
         if ($req->ajax()) {
             $event->load('attendees');
             $attHtml = view('events._attendees', compact('event'))->render();

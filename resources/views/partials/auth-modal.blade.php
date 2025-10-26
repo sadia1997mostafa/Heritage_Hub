@@ -1,3 +1,5 @@
+
+
 <div id="auth-overlay" class="auth-overlay" hidden></div>
 <div id="auth-modal" class="auth-modal" hidden aria-modal="true" role="dialog">
   <div class="modal-card">
@@ -168,8 +170,9 @@
   function setVendorRequired(on){
     if(!vendorBox) return;
     vendorBox.hidden = !on;
-    const reqNames = ['shop_name','phone','district'];
-    vendorBox.querySelectorAll('input,textarea').forEach(el=>{
+    
+    const reqNames = ['shop_name','phone','district_id','vendor_category'];
+    vendorBox.querySelectorAll('input,textarea,select').forEach(el=>{
       if(reqNames.includes(el.name)){
         if(on) el.setAttribute('required','required');
         else el.removeAttribute('required');
@@ -231,17 +234,22 @@ input,select,textarea {padding:10px;border:1px solid #ccc;border-radius:10px}
   const modal   = $("#auth-modal");
   const closeBtn= $("#auth-close");
 
-  function openModal(tab='login'){
-    if (!overlay || !modal) return;
-    overlay.hidden = false;
-    modal.hidden   = false;
-    setTab(tab);
-  }
-  function closeModal(){
-    if (!overlay || !modal) return;
-    overlay.hidden = true;
-    modal.hidden   = true;
-  }
+ function openModal(tab='login'){
+  if (!overlay || !modal) return;
+  overlay.hidden = false;
+  modal.hidden   = false;
+  overlay.classList.add('is-open');   // <- add class
+  modal.classList.add('is-open');     // <- add class
+  setTab(tab);
+}
+function closeModal(){
+  if (!overlay || !modal) return;
+  overlay.hidden = true;
+  modal.hidden   = true;
+  overlay.classList.remove('is-open'); // <- remove class
+  modal.classList.remove('is-open');   // <- remove class
+}
+
   function setTab(name){
     $$(".tab").forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
     $$(".tabpane").forEach(p=>p.classList.toggle('active', p.id.startsWith(name)));

@@ -7,6 +7,16 @@
   {{-- HeritageHub vendor theme --}}
   @vite('resources/css/vendor.css')
 
+  <style>
+    .vendor-layout .container{padding:0 12px}
+    @media (max-width:900px){
+      .vendor-sidebar{width:100%;position:relative}
+      .vendor-content{margin-left:0;padding:12px}
+    }
+    img,video{max-width:100%;height:auto}
+    .table-responsive{overflow-x:auto}
+  </style>
+
 </head>
 <body>
 

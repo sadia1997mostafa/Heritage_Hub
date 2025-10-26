@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\District;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DistrictPageController extends Controller
 {
@@ -17,9 +18,6 @@ class DistrictPageController extends Controller
             'vendors'
         ])->where('slug', $slug)->firstOrFail();
 
-        // Also include VendorProfile rows that match this district so newer storefront entries
-        // appear on the district page. We merge them into the `vendors` relation so views
-        // referencing $district->vendors continue to work.
         try {
             if (class_exists('\App\\Models\\VendorProfile')) {
                 $vp = \App\Models\VendorProfile::where(function($q) use ($district) {
@@ -35,10 +33,10 @@ class DistrictPageController extends Controller
                 }
             }
         } catch (\Throwable $e) {
-            // If anything goes wrong (missing table/columns), ignore and continue with legacy vendors only
+            
         }
 
-        // Split items by category for tabs
+        
         $byCat = [
             'site'     => [],
             'craft'    => [],
@@ -57,6 +55,51 @@ class DistrictPageController extends Controller
                     $gallery[] = ['url' => $m->url, 'caption' => $m->caption];
                 }
             }
+        }
+
+      
+        foreach ($district->items as $it) {
+            $img = $it->hero_image ?? null;
+            if (!$img) {
+                // pick first image media if present
+                $m = $it->media->firstWhere('type', 'image');
+                $img = $m->url ?? null;
+            }
+
+            $resolved = null;
+            if ($img) {
+                // already a full URL
+                if (preg_match('/^https?:\/\//i', $img)) {
+                    $resolved = $img;
+                } else {
+                    
+                    $candidate = ltrim($img, '/');
+                
+                    if (preg_match('/^storage\//i', $candidate)) {
+                        $resolved = asset($candidate);
+                    } else {
+                        
+                        try {
+                            if (Storage::disk('public')->exists($candidate)) {
+                                $resolved = asset('storage/' . $candidate);
+                            } else {
+                                
+                                if (Storage::disk('public')->exists('images/' . $candidate)) {
+                                    $resolved = asset('storage/images/' . $candidate);
+                                } else {
+                                    
+                                    $resolved = asset('storage/' . $candidate);
+                                }
+                            }
+                        } catch (\Throwable $e) {
+                        
+                            $resolved = asset('storage/' . $candidate);
+                        }
+                    }
+                }
+            }
+
+            $it->first_image_url = $resolved;
         }
 
         return view('heritage.district', [

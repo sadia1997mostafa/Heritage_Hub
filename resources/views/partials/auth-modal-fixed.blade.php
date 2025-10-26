@@ -313,11 +313,29 @@
   overlay?.addEventListener('click', closeModal);
   closeBtn?.addEventListener('click', closeModal);
 
-  // Navbar triggers
+  // Navbar triggers — supports data-auth-open (tab) and optional data-auth-vendor to pre-check vendor fields
   $$('[data-auth-open]').forEach(el=>{
     el.addEventListener('click', e=>{
       e.preventDefault();
-      openModal(el.dataset.authOpen || 'login');
+      const tab = el.dataset.authOpen || 'login';
+      openModal(tab);
+
+      // If caller wants to open the register form as a vendor, set the checkbox and trigger the UI toggle.
+      // Use a short timeout so the modal/tab has been activated first.
+      if (el.dataset.authVendor !== undefined) {
+        setTimeout(() => {
+          try {
+            const chk = document.getElementById('register_as_vendor');
+            if (chk) {
+              chk.checked = true;
+              chk.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+          } catch (err) {
+            // swallow errors to avoid breaking the page if DOM changed
+            console && console.warn && console.warn('auth-modal: failed to auto-check vendor box', err);
+          }
+        }, 10);
+      }
     });
   });
 
@@ -327,8 +345,9 @@
   function setVendorRequired(on){
     if(!extra) return;
     extra.hidden = !on;
-    const req = ['shop_name','phone','district'];
-    extra.querySelectorAll('input,textarea').forEach(el=>{
+  
+    const req = ['shop_name','phone','district_id','vendor_category'];
+    extra.querySelectorAll('input,textarea,select').forEach(el=>{
       if (req.includes(el.name)) on ? el.setAttribute('required','required') : el.removeAttribute('required');
     });
   }

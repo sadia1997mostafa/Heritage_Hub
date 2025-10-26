@@ -5,7 +5,7 @@ import '../css/ui-3d-advanced.css';
 
 document.addEventListener('DOMContentLoaded', () => {
 
-      // Mega menu (accessible: click/focus/touch)
+      
   document.querySelectorAll('.has-mega > a').forEach(trigger => {
     const panel = trigger.nextElementSibling;
     if (!panel) return;
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     trigger.addEventListener('click', (e)=>{
-      // on mobile when menu collapsed, let it act as section opener rather than navigate away
+      
       if (window.innerWidth <= 980) e.preventDefault();
       trigger.getAttribute('aria-expanded') === 'true' ? close() : open();
     });
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const menu = document.querySelector('.hh-menu');
   if (burger && menu) burger.addEventListener('click', () => menu.classList.toggle('show'));
 
-  // Shrink header on scroll + progress bar + active anchor
+  
   const body = document.body;
   const prog = document.getElementById('hh-progress');
   const sections = ['about','explore','app','contact']
@@ -63,15 +63,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const onScroll = () => {
     const y = window.scrollY || window.pageYOffset;
-    // shrink
+    
     if (y > 10) body.classList.add('shrink'); else body.classList.remove('shrink');
-    // progress
+    
     if (prog) {
       const h = document.documentElement;
       const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight);
       prog.style.width = (scrolled * 100) + '%';
     }
-    // active anchor
+  
     if (sections.length) {
       const pos = y + 130;
       let current = null;
@@ -204,8 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
       parent.addEventListener('mouseleave', ()=>{ if (!prefersReduced && !timer) timer = setInterval(()=>{ idx = (idx+1) % slides.length; refreshClasses(idx); }, 3200); });
     }
   });
-    // ===== Craft Origin Map Interactions =====
- // ===== Craft Origin Map Interactions =====
+    // Craft Origin Map Interactions 
+ // Craft Origin Map Interactions 
 const tip = document.getElementById('map-tip');
 const panel = document.getElementById('craft-panel');
 const panelTitle = document.getElementById('panel-title');
@@ -288,18 +288,18 @@ divisions.forEach(d => {
   d.addEventListener('mouseenter', (e)=>{ d.classList.add('hover'); showTip(e); });
   d.addEventListener('mouseleave', ()=>{ d.classList.remove('hover'); if (tip) tip.hidden = true; });
 
-  // SINGLE, authoritative division click handler
+  
   d.addEventListener('click', () => {
-    // toggle selection
+    
     divisions.forEach(x => x.classList.remove('active'));
     d.classList.add('active');
 
     const divName = nameFromId(d.id);
 
-    // store the chosen division on the panel so other handlers can read it
+    
     if (panel) panel.dataset.division = divName;
 
-    // Fill panel UI (title + district list)
+    
     if (panelTitle) panelTitle.textContent = `${divName} Division`;
 
     const entries = craftData[divName] || [];
@@ -324,12 +324,12 @@ divisions.forEach(d => {
       viewAllBtn.href = `${base}?division=${encodeURIComponent(divName)}`;
     }
 
-    // open panel
+  
     if (panel) panel.classList.add('open');
   });
 });
 
-// close panel
+
 if (panelClose && panel) {
   panelClose.addEventListener('click', ()=> panel.classList.remove('open'));
   document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') panel.classList.remove('open'); });
@@ -341,7 +341,7 @@ if (panelList && panel) {
     const item = e.target.closest('[data-district]');
     if (!item) return;
 
-    const division = panel.dataset.division;   // reliable, no brittle title parsing
+    const division = panel.dataset.division;   
     const district = item.getAttribute('data-district');
 
     if (!division || !district) return;

@@ -8,11 +8,7 @@ use GuzzleHttp\Client;
 
 class OpenAIChatController extends Controller
 {
-    /**
-     * Proxy chat requests to OpenAI using server-side API key.
-     *
-     * POST /district/{slug}/chat
-     */
+   
     public function chat(Request $request, string $slug)
     {
         $request->validate(["question" => "required|string"]);

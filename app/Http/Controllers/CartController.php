@@ -104,7 +104,7 @@ class CartController extends Controller
         $cart = $this->cart->all();
         if (empty($cart)) return redirect()->route('cart')->with('error','Cart empty');
 
-        // Branch by payment method
+        
         if ($data['payment_method'] === 'cod') {
             DB::beginTransaction();
             try {
@@ -176,7 +176,7 @@ class CartController extends Controller
             }
         }
 
-        // ONLINE payment: create order and order items but do NOT decrement stock or create shipments yet
+        // ONLINE payment
         DB::beginTransaction();
         try {
             $subtotal = 0; $shipping_total = 0;
@@ -184,7 +184,7 @@ class CartController extends Controller
                 foreach ($lines as $productId => $line) {
                     $subtotal += $line['qty'] * (float)$line['price'];
                 }
-                $shipping_total += 50.00; // flat per-vendor
+                $shipping_total += 50.00;
             }
             $total = $subtotal + $shipping_total;
 
@@ -214,8 +214,6 @@ class CartController extends Controller
 
             DB::commit();
 
-            // create a payment intent linked to this order
-            // choose gateway: if SSLCommerz is configured, use it; otherwise use mock
             $gateway = env('SSLCOMMERZ_STORE_ID') ? 'sslcommerz' : 'mock';
 
             $intent = PaymentIntent::create([

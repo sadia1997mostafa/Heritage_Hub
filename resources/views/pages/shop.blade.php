@@ -14,6 +14,8 @@
     </div>
   </section>
 
+  {{-- Shop hero and featured content (search handled on /search) --}}
+
   {{-- 3D rotating gallery (uses images you provide in public/images) --}}
   <section class="shop-rotator pad-section">
     <div class="hh-container">

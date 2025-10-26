@@ -26,10 +26,12 @@ class AppServiceProvider extends ServiceProvider
         // Prefetch assets for performance
         Vite::prefetch(concurrency: 3);
 
-        // Share districts with auth modal and home view
+        // Share districts with auth modal(s) and home view
+        // The project uses partials for the auth modal; ensure we target the correct view names
         View::composer([
-            'components.auth-modal', // replace with actual path of your modal blade
-            'home',                  // optional: if you also need districts on home
+            'partials.auth-modal',
+            'partials.auth-modal-fixed',
+            'home',
         ], function ($view) {
             // Cache the districts list for a few hours to avoid a DB hit on every request
             $districts = Cache::remember('site:districts', now()->addHours(6), function () {

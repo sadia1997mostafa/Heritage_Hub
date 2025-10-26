@@ -167,6 +167,12 @@ body.hh-body{
   float:left; font-family:"Cinzel",serif; font-size:48px; line-height:1; margin-right:10px; color:var(--brand-600); font-weight:800; padding-top:4px
 }
 
+/* Disable drop-cap for centered or small map intro paragraphs (e.g. craft-map) */
+.craft-map .section-text::first-letter,
+.section-text[style*="text-align:center"]::first-letter{
+  float:none; display:inline; font-size:1.05rem; margin-right:0; padding-top:0; vertical-align:baseline;
+}
+
 /* App section card */
 .app-section .app-card{ display:flex; gap:20px; align-items:center; justify-content:space-between; background:linear-gradient(180deg,#fff,#fff8ef); border:1px solid rgba(231,220,207,.6); padding:18px; border-radius:14px; box-shadow:0 22px 60px rgba(42,28,20,.08) }
 .app-section .app-card > div{ flex:1 }

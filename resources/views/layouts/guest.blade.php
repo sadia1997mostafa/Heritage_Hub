@@ -13,6 +13,15 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+            <style>
+                .hh-container, .container { max-width:1100px; margin:0 auto; padding:0 16px; box-sizing:border-box; }
+                @media (max-width:900px){
+                    .min-h-screen{padding:12px}
+                    .w-full{width:100%}
+                }
+                .table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch}
+                img,video{max-width:100%;height:auto}
+            </style>
     </head>
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">

@@ -31,6 +31,39 @@
   {{-- Page-specific styles (allows views to push theme CSS) --}}
   @stack('styles')
 
+  {{-- Lightweight responsive helpers (mobile-first tweaks) --}}
+  <style>
+    /* container fallback and consistent padding */
+    .hh-container, .container { max-width:1100px; margin:0 auto; padding:0 16px; box-sizing:border-box; }
+
+    /* Mobile / tablet adjustments */
+    @media (max-width: 900px) {
+      .hh-header-row { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+      .hh-search { order:3; flex:1 1 100%; margin:8px 0; }
+      .hh-actions { order:2; display:flex; gap:8px; align-items:center; }
+      #hh-nav { display:none !important; }
+      #hh-burger { display:inline-flex; }
+      .hh-menu { flex-direction:column; gap:8px; }
+      .hh-toplinks { display:flex; flex-wrap:wrap; gap:8px; }
+      .mega { position:static; max-height:none; overflow:visible; }
+      .hh-main { padding:12px; }
+      img, video, .responsive { max-width:100%; height:auto; }
+      table { width:100%; }
+      .table-responsive { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+      .hh-logo .hh-wordmark span { font-size:1.1rem; }
+      .hh-search input { width:100%; }
+      .hh-actions select { max-width:120px; }
+    }
+
+    @media (max-width: 480px) {
+      .hh-toplinks { font-size:14px; }
+      .hh-logo .hh-wordmark span { font-size:1rem; }
+      .hh-badge { display:none; }
+      .hh-actions select { display:none; }
+      .hh-search button { padding:8px; }
+    }
+  </style>
+
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   {{-- Fonts: Latin + Bengali --}}
@@ -60,15 +93,11 @@
   <div class="hh-topbar">
     <div class="hh-container">
       <ul class="hh-toplinks">
-        <li><a href="{{ route('shop') }}">Become a Seller</a></li>
+  <li><a href="#" data-auth-open="register" data-auth-vendor="1">Become a Seller</a></li>
         <li><a href="{{ route('skills') }}">Workshops</a></li>
         <li class="hh-divider"></li>
 
-        {{-- language toggle (bn/en) --}}
-        <li>
-          <a class="hh-lang" href="#">
-            <span class="bn">বাংলা</span><span class="sep">|</span><span class="en">EN</span>
-          </a>
+       
         </li>
 
         @auth
@@ -102,24 +131,14 @@
         </div>
       </a>
 
-      <form action="{{ route('shop') }}" class="hh-search" role="search">
+      <form action="{{ route('search') }}" class="hh-search" role="search">
         <input name="q" type="search" placeholder="Search crafts, cities, festivals…" />
         <button aria-label="Search">
           <svg viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
         </button>
       </form>
 
-      {{-- Quick jump to specific category/product/store/district for development/testing --}}
-      <form action="{{ route('goto') }}" method="GET" class="hh-quickjump" style="display:inline-block;margin-left:12px">
-        <select name="type" aria-label="Type">
-          <option value="category">Category</option>
-          <option value="product">Product</option>
-          <option value="store">Store</option>
-          <option value="district">District</option>
-        </select>
-        <input name="slug" placeholder="slug" style="width:160px" />
-        <button type="submit">Go</button>
-      </form>
+     
 
       <div class="hh-actions">
         <a class="hh-cart" href="{{ route('cart') }}" aria-label="Cart">

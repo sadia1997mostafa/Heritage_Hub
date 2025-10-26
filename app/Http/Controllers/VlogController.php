@@ -166,8 +166,7 @@ class VlogController extends Controller
     // Admin: list pending vlogs
     public function adminIndex()
     {
-        // very simple admin gate: user with ability 'viewAny'
-        // Log the current user for debugging admin access issues (both default and admin guard)
+    
         try {
             $webUser = request()->user();
             $adminUser = \Auth::guard('admin')->user();
@@ -181,7 +180,7 @@ class VlogController extends Controller
             \Log::warning('Failed to log admin vlogs access', ['err' => $e->getMessage()]);
         }
 
-        // If an admin is authenticated via the admin guard, allow access directly.
+        // If an admin is authenticated via the admin guard, allow acce
         if (!\Auth::guard('admin')->check()) {
             $this->authorize('viewAny', Vlog::class);
         }
@@ -191,7 +190,7 @@ class VlogController extends Controller
 
     public function approve(Request $req, Vlog $vlog)
     {
-        // Allow admin guard users to approve without hitting the default policy guard mismatch
+        // admin guard users to approve without hitting the default policy guard mismatch
         if (!\Auth::guard('admin')->check()) {
             $this->authorize('approve', $vlog);
             $approverId = $req->user()->id;
@@ -205,7 +204,7 @@ class VlogController extends Controller
         $vlog->approved_at = now();
         $vlog->save();
 
-        // Create a local notification for the vlog owner
+        // local notification for the vlog owner
         try {
             $owner = $vlog->user;
             if ($owner) {
@@ -228,7 +227,7 @@ class VlogController extends Controller
         return back()->with('status','Vlog approved.');
     }
 
-    // Local helper: resize image using GD. Returns true on success.
+    //  resize image using GD. Returns true on success.
     protected function resize_image_to($sourcePath, $destPath, $maxWidth)
     {
         if (!file_exists($sourcePath)) return false;

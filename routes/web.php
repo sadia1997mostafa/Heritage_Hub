@@ -37,6 +37,7 @@ use App\Http\Controllers\Admin\AdminPayoutController;
 use App\Http\Controllers\Shop\CategoryController;
 use App\Http\Controllers\Shop\ProductPublicController;
 use App\Http\Controllers\Shop\StorefrontController;
+use App\Http\Controllers\Shop\SearchController;
 
 
 /*
@@ -46,6 +47,8 @@ use App\Http\Controllers\Shop\StorefrontController;
 */
 Route::view('/', 'home')->name('home');
 Route::view('/shop',   'pages.shop')->name('shop');
+// Dedicated search results page
+Route::get('/search', [SearchController::class, 'index'])->name('search');
 // Cart & Checkout
 Route::get('/cart', [\App\Http\Controllers\CartController::class,'index'])->name('cart');
 Route::post('/cart/add', [\App\Http\Controllers\CartController::class,'add'])->name('cart.add');

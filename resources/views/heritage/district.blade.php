@@ -3,14 +3,23 @@
 
 @section('content')
 <main class="hh-wrap">
-  {{-- Banner (image output commented out — add banner later) --}}
-  {{-- original banner image attribute: style="background-image:url('{{ $district->banner_url }}')" --}}
-  <section class="hh-banner no-image">
-    <div class="hh-banner-overlay">
-      <h1>{{ $district->name }} District</h1>
-      <p class="hh-division">Division: {{ $division->name }}</p>
-    </div>
-  </section>
+  {{-- Banner: use `banner_url` (external URL) or `hero_image` (storage path) via District::getHeroUrlAttribute() as `hero_url`. --}}
+  @php $hero = $district->hero_url ?? null; @endphp
+  @if(!empty($hero))
+    <section class="hh-banner" style="background-image:url('{{ $hero }}')">
+      <div class="hh-banner-overlay">
+        <h1>{{ $district->name }} District</h1>
+        <p class="hh-division">Division: {{ $division->name }}</p>
+      </div>
+    </section>
+  @else
+    <section class="hh-banner no-image">
+      <div class="hh-banner-overlay">
+        <h1>{{ $district->name }} District</h1>
+        <p class="hh-division">Division: {{ $division->name }}</p>
+      </div>
+    </section>
+  @endif
 
   {{-- Intro --}}
   <section class="hh-intro">
@@ -39,16 +48,8 @@
           <div class="hh-grid">
             @foreach($items as $it)
               @php
-                // choose image: hero_image or first media image of type 'image'
-                $img = $it->hero_image ?? (isset($it->media) && $it->media->count() ? ($it->media->where('type','image')->first()->url ?? null) : null);
-                $imgUrl = null;
-                if ($img) {
-                  if (preg_match('/^https?:\/\//i', $img)) {
-                    $imgUrl = $img;
-                  } else {
-                    $imgUrl = asset('storage/' . ltrim($img, '/'));
-                  }
-                }
+                // Use the controller-provided normalized `first_image_url` when available.
+                $imgUrl = $it->first_image_url ?? null;
               @endphp
               <article class="hh-card">
                 @php

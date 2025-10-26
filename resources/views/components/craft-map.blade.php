@@ -7,33 +7,33 @@
   </div>
 
   <div class="map-wrapper">
-    <!-- Match mapshaper export size so shapes aren't distorted -->
+    
     <svg id="bd-map" class="bd-map" viewBox="0 0 800 1027"
          xmlns="http://www.w3.org/2000/svg" aria-labelledby="bdMapTitle" role="img"
          stroke-linecap="round" stroke-linejoin="round">
       <title id="bdMapTitle">Bangladesh Divisions (Interactive)</title>
 
-      <!-- ===== patterns / gradients (kept from your version) ===== -->
+      
       <defs>
-        <!-- warm parchment fallback -->
+        
         <linearGradient id="parchment" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stop-color="#fff7eb"/>
           <stop offset="1" stop-color="#f6ead6"/>
         </linearGradient>
 
-        <!-- gold stroke -->
+        
         <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" stop-color="#d9a441"/>
           <stop offset="1" stop-color="#f4d991"/>
         </linearGradient>
 
-        <!-- subtle texture overlay -->
+        
         <pattern id="grain" width="6" height="6" patternUnits="userSpaceOnUse">
           <path d="M0 3C2 2 4 4 6 3" stroke="rgba(0,0,0,.06)" stroke-width=".6" fill="none"/>
         </pattern>
 
-        <!-- optional image fills (keep or remove) -->
-        <pattern id="img-dhaka" width="1" height="1" patternContentUnits="objectBoundingBox">
+        
+        <!-- <pattern id="img-dhaka" width="1" height="1" patternContentUnits="objectBoundingBox">
           <image href="/images/divisions/dhaka.jpg" preserveAspectRatio="xMidYMid slice" width="1" height="1"/>
         </pattern>
         <pattern id="img-rajshahi" width="1" height="1" patternContentUnits="objectBoundingBox">
@@ -56,14 +56,14 @@
         </pattern>
         <pattern id="img-chittagong" width="1" height="1" patternContentUnits="objectBoundingBox">
           <image href="/images/divisions/chittagong.jpg" preserveAspectRatio="xMidYMid slice" width="1" height="1"/>
-        </pattern>
+        </pattern> -->
       </defs>
 
-      <!-- background plate sized to full viewBox -->
+    
       <rect x="0" y="0" width="800" height="1027" rx="24" fill="url(#parchment)"/>
       <rect x="0" y="0" width="800" height="1027" rx="24" fill="url(#grain)" opacity=".35"/>
 
-      <!-- ===== real divisions from your SVG export ===== -->
+      <!-- real divisions from your SVG export -->
       <g id="divisions" stroke="url(#gold)" stroke-width="2.2"
          stroke-linejoin="round" stroke-linecap="round" fill-opacity=".92">
 

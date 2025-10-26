@@ -21,11 +21,7 @@ class HeritageController extends Controller
         ]);
     }
 
-    /**
-     * New: Server-rendered full page
-     * URL: /heritage/{division}/{district?}
-     * Optional: ?force=1 (to refetch from Wikipedia & refresh cache)
-     */
+   
     public function page(Request $request, string $division, ?string $district = null)
     {
         $force = (bool) $request->boolean('force');
@@ -51,10 +47,7 @@ class HeritageController extends Controller
         ]);
     }
 
-    /**
-     * Shared fetch-with-cache used by both show() and page()
-     * Returns: [$division,$district,$items,$cached]
-     */
+    
     private function getItems(string $division, ?string $district = null): array
     {
         $division = ucfirst(strtolower($division));

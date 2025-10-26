@@ -5,6 +5,17 @@
   <title>Admin Panel — @yield('title','Dashboard')</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   @vite(['resources/css/admin.css'])
+  <style>
+    .admin-shell{display:flex}
+    @media (max-width:900px){
+      .admin-shell{flex-direction:column}
+      .admin-aside{width:100%;position:relative}
+      .admin-main{margin-left:0;padding:12px}
+      .admin-topcard{display:flex;flex-direction:column;gap:8px}
+    }
+    .table-responsive{overflow-x:auto}
+    img,video{max-width:100%;height:auto}
+  </style>
 </head>
 <body>
   <div class="admin-shell">

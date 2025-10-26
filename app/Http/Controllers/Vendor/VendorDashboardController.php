@@ -8,9 +8,7 @@ use Illuminate\Http\Request;
 
 class VendorDashboardController extends Controller
 {
-    /**
-     * Show the vendor dashboard for the logged-in vendor
-     */
+  
     public function index(Request $request)
     {
         // get the vendor profile linked to the logged-in user
